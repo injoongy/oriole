@@ -20,6 +20,7 @@
 	],
 	"dependencies": {
 		"ink": "^3.0.7",
+		"ink-text-input": "^4.0.1",
 		"pastel": "^1.1.1",
 		"prop-types": "^15.7.2",
 		"react": "^16.14.0"
