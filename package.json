@@ -1,21 +1,27 @@
 {
-  "name": "oriole",
-  "version": "0.0.0",
-  "description": "Make time fly.",
-  "main": "index.js",
-  "repository": "git@github.com:AttilaTheHen/oriole.git",
-  "author": "Injoong Yoon <27440940+AttilaTheHen@users.noreply.github.com>",
-  "license": "MIT",
-  "dependencies": {
-    "ink": "^3.0.7",
-    "pastel": "^1.1.1",
-    "prop-types": "^15.7.2",
-    "react": "^16.14.0"
-  },
-  "bin": "./build/cli.js",
-  "scripts": {
-    "build": "pastel build",
-    "dev": "pastel dev",
-    "prepare": "pastel build"
-  }
+	"name": "oriole",
+	"version": "0.0.0",
+	"description": "Make time fly.",
+	"main": "index.js",
+	"repository": "git@github.com:AttilaTheHen/oriole.git",
+	"author": "Injoong Yoon <27440940+AttilaTheHen@users.noreply.github.com>",
+	"license": "MIT",
+	"bin": "./build/cli.js",
+	"engines": {
+		"node": ">=8"
+	},
+	"scripts": {
+		"dev": "pastel dev",
+		"build": "pastel build",
+		"prepare": "pastel build"
+	},
+	"files": [
+		"build"
+	],
+	"dependencies": {
+		"ink": "^3.0.7",
+		"pastel": "^1.1.1",
+		"prop-types": "^15.7.2",
+		"react": "^16.14.0"
+	}
 }

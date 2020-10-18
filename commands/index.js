@@ -2,12 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Text} from 'ink';
 
-/// This is my command description
-const HelloPerson = ({name}) => <Text>Hello, {name}</Text>;
+/// Hello world command
+const Hello = ({name}) => <Text>Hello, {name}</Text>;
 
-HelloPerson.propTypes = {
-	/// This is "name" option description
+Hello.propTypes = {
+	/// Name of the person to greet
 	name: PropTypes.string.isRequired
 };
 
-export default HelloPerson;
+export default Hello;
