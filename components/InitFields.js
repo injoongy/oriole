@@ -14,7 +14,7 @@ const InitFields = () => {
 
 	const handleToken = value => setShowAccountField(true);
 	const handleAccountId = value => {
-		setShowBothFields(true); // write to file? Save to state?
+		setShowBothFields(true); // write to file? Save to state? Follow my example in weatherbee using config.js?
 		exit();
 	}
 
