@@ -19,7 +19,7 @@ const InitFields = () => {
   }
 
   return (
-  	<Box flexDirection="column">
+    <Box flexDirection="column">
       <Box marginTop={1}>
       	<Box marginRight={1}>
           <Text color="green">❯</Text>
@@ -33,27 +33,27 @@ const InitFields = () => {
           onSubmit={handleToken}
       	/>
       </Box>
-    	{showAccountField && (
+      {showAccountField && (
       	<Box>
           <Box marginRight={1}>
             <Text color="green">❯</Text>
           </Box>
-        	<TextInput
+          <TextInput
             placeholder="Enter your Harvest Account ID here."
             focus={showAccountField}
             showCursor={false}
             value={accountId}
             onChange={setAccountId}
             onSubmit={handleAccountId}
-        	/>
+          />
       	</Box>
-    	)}
+      )}
       {showBothFields && (
         <Box marginTop={1}>
           <Text>Token: {token}, ID: {accountId}</Text>
         </Box>
       )}
-  	</Box>
+    </Box>
   );
 };
 
