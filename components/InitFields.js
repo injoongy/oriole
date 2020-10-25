@@ -14,8 +14,8 @@ const InitFields = () => {
 
   const handleToken = value => setShowAccountField(true);
   const handleAccountId = value => {
-  	setShowBothFields(true); // write to file? Save to state? Follow my example in weatherbee using config.js?
-  	exit();
+    setShowBothFields(true); // write to file? Save to state? Follow my example in weatherbee using config.js?
+    exit();
   }
 
   return (
@@ -25,34 +25,34 @@ const InitFields = () => {
           <Text color="green">❯</Text>
       	</Box>
       	<TextInput
-        	placeholder="Enter your Harvest Personal Access Token here."
-        	focus={!showAccountField}
-        	showCursor={false}
-        	value={token}
-        	onChange={setToken}
-        	onSubmit={handleToken}
+          placeholder="Enter your Harvest Personal Access Token here."
+          focus={!showAccountField}
+          showCursor={false}
+          value={token}
+          onChange={setToken}
+          onSubmit={handleToken}
       	/>
       </Box>
     	{showAccountField && (
       	<Box>
-        	<Box marginRight={1}>
+          <Box marginRight={1}>
             <Text color="green">❯</Text>
-        	</Box>
+          </Box>
         	<TextInput
-          	placeholder="Enter your Harvest Account ID here."
-          	focus={showAccountField}
-          	showCursor={false}
-          	value={accountId}
-          	onChange={setAccountId}
-          	onSubmit={handleAccountId}
+            placeholder="Enter your Harvest Account ID here."
+            focus={showAccountField}
+            showCursor={false}
+            value={accountId}
+            onChange={setAccountId}
+            onSubmit={handleAccountId}
         	/>
       	</Box>
     	)}
-    	{showBothFields && (
+      {showBothFields && (
         <Box marginTop={1}>
           <Text>Token: {token}, ID: {accountId}</Text>
         </Box>
-    	)}
+      )}
   	</Box>
   );
 };
