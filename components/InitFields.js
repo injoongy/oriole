@@ -3,11 +3,14 @@ import PropTypes from 'prop-types';
 import { Text, Box, useApp, useStdout } from 'ink';
 import TextInput from 'ink-text-input';
 import conf from 'conf';
+import bcrypt from 'bcryptjs';
 
 const InitFields = () => {
   const { exit } = useApp();
   const { write } = useStdout();
   const config = new conf();
+  const tokenSalt = bcrypt.genSaltSync(10);
+  const accountIdSalt = bcrypt.genSaltSync(10);
 
   const [token, setToken] = useState('');
   const [accountId, setAccountId] = useState('');
@@ -16,11 +19,12 @@ const InitFields = () => {
 
   const handleToken = value => setShowAccountField(true);
   const handleAccountId = value => {
-    config.set('token', token);
-    config.set('accountId', accountId);
+    const hashedToken = bcrypt.hashSync(token, tokenSalt);
+    const hashedAccountId = bcrypt.hashSync(accountId, accountIdSalt);
 
-    console.log('config token', config.get('token'));
-    console.log('config accountId', config.get('accountId'));
+    config.set('token', hashedToken);
+    config.set('accountId', hashedAccountId);
+
     setShowBothFields(true); // write to file? Save to state? Follow my example in weatherbee using config.js?
     exit();
   }
