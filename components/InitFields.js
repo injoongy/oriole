@@ -9,23 +9,21 @@ const InitFields = () => {
   const { exit } = useApp();
   const { write } = useStdout();
   const config = new conf();
-  const tokenSalt = bcrypt.genSaltSync(10);
-  const accountIdSalt = bcrypt.genSaltSync(10);
 
   const [token, setToken] = useState('');
   const [accountId, setAccountId] = useState('');
   const [showAccountField, setShowAccountField] = useState(false);
-  const [showBothFields, setShowBothFields] = useState(false);
+  const [savedBothFields, setSavedBothFields] = useState(false);
 
   const handleToken = value => setShowAccountField(true);
   const handleAccountId = value => {
-    const hashedToken = bcrypt.hashSync(token, tokenSalt);
-    const hashedAccountId = bcrypt.hashSync(accountId, accountIdSalt);
+    const hashedToken = bcrypt.hashSync(token, 10);
+    const hashedAccountId = bcrypt.hashSync(accountId, 10);
 
     config.set('token', hashedToken);
     config.set('accountId', hashedAccountId);
 
-    setShowBothFields(true); // write to file? Save to state? Follow my example in weatherbee using config.js?
+    setSavedBothFields(true);
     exit();
   }
 
@@ -59,9 +57,9 @@ const InitFields = () => {
           />
       	</Box>
       )}
-      {showBothFields && (
+      {savedBothFields && (
         <Box marginTop={1}>
-          <Text>Token: {token}, ID: {accountId}</Text>
+          <Text>Your user info has been saved successfully.</Text>
         </Box>
       )}
     </Box>
