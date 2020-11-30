@@ -19,10 +19,9 @@
     "build"
   ],
   "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "conf": "^7.1.2",
     "ink": "^3.0.7",
     "ink-text-input": "^4.0.1",
+    "keytar": "^7.2.0",
     "pastel": "^1.1.1",
     "prop-types": "^15.7.2",
     "react": "^16.14.0"
