@@ -6,8 +6,8 @@ import {Text} from 'ink';
 const Hello = ({name}) => <Text>Hello, {name}</Text>;
 
 Hello.propTypes = {
-	/// Name of the person to greet
-	name: PropTypes.string.isRequired
+  /// Name of the person to greet
+  name: PropTypes.string.isRequired
 };
 
 export default Hello;
