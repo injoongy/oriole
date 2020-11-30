@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Text, Box, useApp, useStdout } from 'ink';
 import TextInput from 'ink-text-input';
+import conf from 'conf';
 
 const InitFields = () => {
   const { exit } = useApp();
   const { write } = useStdout();
+  const config = new conf();
 
   const [token, setToken] = useState('');
   const [accountId, setAccountId] = useState('');
@@ -14,6 +16,11 @@ const InitFields = () => {
 
   const handleToken = value => setShowAccountField(true);
   const handleAccountId = value => {
+    config.set('token', token);
+    config.set('accountId', accountId);
+
+    console.log('config token', config.get('token'));
+    console.log('config accountId', config.get('accountId'));
     setShowBothFields(true); // write to file? Save to state? Follow my example in weatherbee using config.js?
     exit();
   }
