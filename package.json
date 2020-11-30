@@ -19,6 +19,7 @@
     "build"
   ],
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "conf": "^7.1.2",
     "ink": "^3.0.7",
     "ink-text-input": "^4.0.1",
