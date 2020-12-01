@@ -5,5 +5,26 @@
   "main": "index.js",
   "repository": "git@github.com:AttilaTheHen/oriole.git",
   "author": "Injoong Yoon <27440940+AttilaTheHen@users.noreply.github.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "bin": "./build/cli.js",
+  "engines": {
+    "node": ">=8"
+  },
+  "scripts": {
+    "dev": "pastel dev",
+    "build": "pastel build",
+    "prepare": "pastel build"
+  },
+  "files": [
+    "build"
+  ],
+  "dependencies": {
+    "conf": "^7.1.2",
+    "ink": "^3.0.7",
+    "ink-text-input": "^4.0.1",
+    "keytar": "^7.2.0",
+    "pastel": "^1.1.1",
+    "prop-types": "^15.7.2",
+    "react": "^16.14.0"
+  }
 }
