@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Text, Box, useApp, useStdout } from 'ink';
+import { Text, Box, useApp } from 'ink';
 import TextInput from 'ink-text-input';
 import keytar from 'keytar';
 import crypto from 'crypto';
@@ -8,7 +8,6 @@ import Conf from 'conf';
 
 const InitFields = () => {
   const { exit } = useApp();
-  const { write } = useStdout();
 
   const encryptionKey = crypto.randomBytes(256).toString('base64');
   const config = new Conf({ encryptionKey });
