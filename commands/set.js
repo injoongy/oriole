@@ -7,9 +7,7 @@ import SetOptions from '../components/SetOptions';
 const set = () => {
   return (
     <Box flexDirection="column">
-      <Text>
-        Please choose which Harvest project you want to link with the current directory.
-      </Text>
+      <Text>Please choose which Harvest project you want to link with the current directory.</Text>
       <SetOptions />
     </Box>
   );
