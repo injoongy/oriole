@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Text, Box } from 'ink';
-import SetOptions from '../components/SetOptions';
+import SetOptions from '../lib/components/SetOptions';
 
 /// set command
 const set = () => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Text, Box } from 'ink';
-import InitFields from '../components/InitFields';
+import InitFields from '../lib/components/InitFields';
 
 /// init command
 const init = () => {
