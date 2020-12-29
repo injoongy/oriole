@@ -21,10 +21,16 @@
   "dependencies": {
     "conf": "^7.1.2",
     "ink": "^3.0.7",
+    "ink-select-input": "^4.2.0",
+    "ink-spinner": "^4.0.1",
     "ink-text-input": "^4.0.1",
     "keytar": "^7.2.0",
+    "node-fetch": "^2.6.1",
     "pastel": "^1.1.1",
     "prop-types": "^15.7.2",
     "react": "^16.14.0"
+  },
+  "devDependencies": {
+    "prettier": "^2.2.1"
   }
 }
