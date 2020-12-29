@@ -6,7 +6,7 @@ import SetOptions from '../lib/components/SetOptions';
 /// set command
 const set = () => {
   return (
-    <Box>
+    <Box flexDirection="column">
       <SetOptions />
     </Box>
   );
