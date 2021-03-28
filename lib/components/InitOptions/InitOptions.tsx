@@ -71,6 +71,7 @@ export const InitOptions = () => {
     exit();
   };
 
+  // TODO: think about refactoring this monster of a ternary
   return (
     <Box flexDirection='column'>
       {error && error.status ? (

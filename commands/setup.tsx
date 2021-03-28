@@ -5,6 +5,10 @@ import { SetupFields } from '../lib/components/SetupFields';
 
 /// setup command
 const setup: FC = () => {
+  /* TODO: Add logic to show if a user has already authenticated if their
+  token and ID are already found in the store? And confirm that they'd like
+  to re-authenticate? And if we implement this, then add flag as a shortcut?
+  To skip the prompt? */
   return (
     <Box flexDirection='column'>
       <Text>

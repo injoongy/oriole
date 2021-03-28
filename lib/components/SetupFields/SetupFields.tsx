@@ -28,7 +28,7 @@ export const SetupFields: FC = () => {
           <Text color='green'>❯</Text>
         </Box>
         <TextInput
-          placeholder='Enter your Harvest Personal Access Token here.'
+          placeholder='Enter your Harvest Personal Access Token here.' // HIDE THESE INPUTS?
           focus={!showAccountField}
           showCursor={false}
           value={token}
@@ -42,7 +42,7 @@ export const SetupFields: FC = () => {
             <Text color='green'>❯</Text>
           </Box>
           <TextInput
-            placeholder='Enter your Harvest Account ID here.'
+            placeholder='Enter your Harvest Account ID here.' // HIDE THESE INPUTS?
             focus={showAccountField}
             showCursor={false}
             value={accountId}
