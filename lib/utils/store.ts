@@ -4,7 +4,7 @@ import Conf from 'conf';
 
 const configName = 'orioleStore';
 
-const getKey = async () => {
+export const getKey = async () => {
   const encryptionKey = await keytar.getPassword('oriole', 'secret');
   if (!encryptionKey) {
     const newEncryptionKey = crypto.randomBytes(256).toString('base64');
@@ -14,38 +14,36 @@ const getKey = async () => {
   return encryptionKey;
 };
 
-const getStore = async () => {
+export const getStore = async () => {
   const encryptionKey = await getKey();
   const store = new Conf({ encryptionKey, configName }); // TODO: add encryptionKey back
   return store;
 };
 
 // TODO: refactor these methods if possible?
-const saveData = async (key, data) => {
+export const saveData = async (key: string, data: string | number) => {
   let store = await getStore();
   store.set(key, data);
 };
 
-const getData = async key => {
+export const getData = async (key: string) => {
   let store = await getStore();
-  return store.get(key);
+  return store.get(key) as string;
 };
 
-const hasData = async key => {
+export const hasData = async (key: string) => {
   let store = await getStore();
-  return store.has(key);
+  return store.has(key) as boolean;
 };
 
-const deleteData = async key => {
+export const deleteData = async (key: string) => {
   let store = await getStore();
   store.delete(key);
   return `${key} was deleted from the store.`;
 };
 
-const deleteAllData = async key => {
+export const deleteAllData = async () => {
   let store = await getStore();
   store.clear();
   return 'The entire store has been deleted.';
 };
-
-export { saveData, getData, hasData, deleteData, deleteAllData };
