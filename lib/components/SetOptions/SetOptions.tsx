@@ -78,32 +78,29 @@ export const SetOptions = () => {
       ) : !userProjectTasks.length ? (
         <Box flexDirection='column'>
           <Text>Please select a project to associate with this directory.</Text>
-          {
-            /* handle if user has not run oriole init */
-            loading ? (
-              <Text>
-                <Text color='blue'>
-                  <Spinner type='clock' />
-                </Text>
-                {' Loading...'}
+          {loading ? (
+            <Text>
+              <Text color='blue'>
+                <Spinner type='clock' />
               </Text>
-            ) : (
-              <Box>
-                <Box marginTop={1}>
-                  <SelectInput
-                    items={userProjects}
-                    limit={10}
-                    onSelect={handleProjectSelect}
-                  />
-                </Box>
-                {userProjects.length > 10 && (
-                  <Box marginLeft={2}>
-                    <Text color='green'>(Scroll for more)</Text>
-                  </Box>
-                )}
+              {' Loading...'}
+            </Text>
+          ) : (
+            <Box>
+              <Box marginTop={1}>
+                <SelectInput
+                  items={userProjects}
+                  limit={10}
+                  onSelect={handleProjectSelect}
+                />
               </Box>
-            )
-          }
+              {userProjects.length > 10 && (
+                <Box marginLeft={2}>
+                  <Text color='green'>(Scroll for more)</Text>
+                </Box>
+              )}
+            </Box>
+          )}
         </Box>
       ) : userProjectTasks.length && !selections.taskName ? (
         <Box flexDirection='column'>
