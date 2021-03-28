@@ -4,7 +4,7 @@ import Conf from 'conf';
 
 const configName = 'orioleStore';
 
-export const getKey = async () => {
+export const getEncryptionKey = async () => {
   const encryptionKey = await keytar.getPassword('oriole', 'secret');
   if (!encryptionKey) {
     const newEncryptionKey = crypto.randomBytes(256).toString('base64');
@@ -15,8 +15,8 @@ export const getKey = async () => {
 };
 
 export const getStore = async () => {
-  const encryptionKey = await getKey();
-  const store = new Conf({ encryptionKey, configName }); // TODO: add encryptionKey back
+  const encryptionKey = await getEncryptionKey();
+  const store = new Conf({ encryptionKey, configName });
   return store;
 };
 
