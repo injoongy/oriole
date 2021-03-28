@@ -1,9 +1,0 @@
-{
-  "formatOnSave": true,
-  "tabWidth": 2,
-  "printWidth": 100,
-  "singleQuote": true,
-  "trailingComma": "all",
-  "arrowParens": "avoid",
-  "htmlWhitespaceSensitivity": "ignore"
-}
