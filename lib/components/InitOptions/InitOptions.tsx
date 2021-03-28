@@ -11,9 +11,9 @@ import {
   FormattedProject,
   FormattedTask,
   Selections,
-} from './SetOptions.interface';
+} from './InitOptions.interface';
 
-export const SetOptions = () => {
+export const InitOptions = () => {
   const { exit } = useApp();
   const [rawUserProjects, setRawUserProjects] = useState<Project[]>([]);
   const [userProjects, setUserProjects] = useState<FormattedProject[]>([]);
@@ -128,7 +128,7 @@ export const SetOptions = () => {
             "{selections.projectName}" and the task "{selections.taskName}".
           </Text>
           <Text>
-            You may change these at any time by re-running the "oriole set"
+            You may change these at any time by re-running the "oriole init"
             command.
           </Text>
         </Box>

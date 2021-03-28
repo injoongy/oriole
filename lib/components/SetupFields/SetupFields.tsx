@@ -4,7 +4,7 @@ import TextInput from 'ink-text-input';
 
 import { saveData } from '../../utils/store';
 
-export const InitFields: FC = () => {
+export const SetupFields: FC = () => {
   const { exit } = useApp();
 
   const [token, setToken] = useState('');

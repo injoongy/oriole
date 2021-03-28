@@ -12,7 +12,7 @@ export const Error: FC<ErrorProps> = ({ status }) => {
       {status === 401 ? (
         <Text>
           Please verify that you entered the correct credentials for your
-          Harvest account by re-running the "oriole init" command, or try again
+          Harvest account by re-running the "oriole setup" command, or try again
           later.
         </Text>
       ) : (
