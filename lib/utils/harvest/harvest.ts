@@ -1,23 +1,24 @@
-import fetch from 'node-fetch';
-
-import { getData } from './store';
+import fetch, { Headers } from 'node-fetch';
+import { getData } from '../store';
+import { Options } from './harvest.interface';
 
 const buildOptions = async () => {
   const token = await getData('token');
   const accountId = await getData('accountId');
 
-  const options = {
+  const headers = new Headers();
+  headers.set('Authorization', `Bearer ${token}`);
+  headers.set('Harvest-Account-ID', accountId);
+
+  const options: Options = {
     method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Harvest-Account-ID': accountId,
-    },
+    headers,
   };
 
   return options;
 };
 
-const getHarvestData = async url => {
+export const getHarvestData = async (url: string) => {
   const options = await buildOptions();
   const response = await fetch(url, options);
   if (!response.ok) {
@@ -26,5 +27,3 @@ const getHarvestData = async url => {
     return await response.json();
   }
 };
-
-export default getHarvestData;
