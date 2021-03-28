@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { FC, useState } from 'react';
 import { Text, Box, useApp } from 'ink';
 import TextInput from 'ink-text-input';
 
-import { saveData } from '../utils/store';
+import { saveData } from '../../utils/store';
 
-const InitFields = () => {
+export const SetupFields: FC = () => {
   const { exit } = useApp();
 
   const [token, setToken] = useState('');
@@ -23,13 +22,13 @@ const InitFields = () => {
   };
 
   return (
-    <Box flexDirection="column">
+    <Box flexDirection='column'>
       <Box marginTop={1}>
         <Box marginRight={1}>
-          <Text color="green">❯</Text>
+          <Text color='green'>❯</Text>
         </Box>
         <TextInput
-          placeholder="Enter your Harvest Personal Access Token here."
+          placeholder='Enter your Harvest Personal Access Token here.'
           focus={!showAccountField}
           showCursor={false}
           value={token}
@@ -40,10 +39,10 @@ const InitFields = () => {
       {showAccountField && (
         <Box>
           <Box marginRight={1}>
-            <Text color="green">❯</Text>
+            <Text color='green'>❯</Text>
           </Box>
           <TextInput
-            placeholder="Enter your Harvest Account ID here."
+            placeholder='Enter your Harvest Account ID here.'
             focus={showAccountField}
             showCursor={false}
             value={accountId}
@@ -60,5 +59,3 @@ const InitFields = () => {
     </Box>
   );
 };
-
-export default InitFields;
