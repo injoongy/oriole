@@ -5,10 +5,7 @@ const tsconfigPath = join('.', '/tsconfig.json');
 module.exports = {
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint'],
-  extends: [
-    'airbnb-typescript',
-    'prettier',
-  ],
+  extends: ['airbnb-typescript', 'prettier'],
   rules: {
     semi: ['error', 'always'],
     'import/prefer-default-export': 'off',
