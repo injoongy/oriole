@@ -9,13 +9,14 @@ export const Commits: FC = () => {
 
   if (!gitLog) {
     const log = child.execSync(
-      'git log --author=$(git config user.email) --format=%s%b --no-merges -n 10',
+      'git log --author=$(git config user.email) --format="- %B" --no-merges -n 10',
     );
     const logString = log ? log.toString() : ''; // if log is null, like when exiting git log, there's an error - so ternary will resolve this
     // TODO: need to get git log lines from whatever timeframe specified (default should be today, but since it's dev, just get the last 10),
     // then format them with dashes and neat lines (handle multiline commits somehow?), and output that to the user for confirmation.
     // Once confirmed, actually push it up to Harvest. Think about an option for a ticket heading?
-    setGitLog(logString);
+    const formattedLog = logString.replace(/(^[ \t]*\n)/gm, '');
+    setGitLog(formattedLog);
     setShowGitLog(true);
   }
 
