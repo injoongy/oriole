@@ -1,11 +1,26 @@
 import React, { FC, useState } from 'react';
 import { Text, Box, useApp } from 'ink';
+import SelectInput from 'ink-select-input';
 import * as child from 'child_process';
+import { Choice } from './Commits.interface';
 
 export const Commits: FC = () => {
   const { exit } = useApp();
   const [gitLog, setGitLog] = useState('');
   const [showGitLog, setShowGitLog] = useState(false);
+  const choices: Choice[] = [
+    { label: 'Yes', value: 'y' },
+    { label: 'No', value: 'n' },
+  ];
+  const handleSelect = (item: Choice) => {
+    if (item.value === 'y') {
+      console.log('confirmed');
+      exit();
+    } else {
+      console.log('rejected');
+      exit();
+    }
+  };
 
   if (!gitLog) {
     const log = child.execSync(
@@ -24,8 +39,12 @@ export const Commits: FC = () => {
     <Box flexDirection='column'>
       <Text>Here are your latest commits in this repo:</Text>
       {showGitLog && (
-        <Box marginTop={1}>
+        <Box marginTop={1} flexDirection='column'>
           <Text>{gitLog}</Text>
+          <Box flexDirection='column'>
+            <Text>Push these up to Harvest?</Text>
+            <SelectInput items={choices} onSelect={handleSelect} />
+          </Box>
         </Box>
       )}
     </Box>
