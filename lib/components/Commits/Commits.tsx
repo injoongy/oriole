@@ -32,7 +32,7 @@ export const Commits: FC = () => {
         project_id: Number(projectId),
         task_id: Number(taskId),
         spent_date: spentDate,
-        hours: hours,
+        hours,
         notes: gitLog,
       };
       // TODO: Make sure this is idempotent. Currently can just keep running command to add multiple of the same entry.
@@ -42,8 +42,8 @@ export const Commits: FC = () => {
           // TODO: Add logic to clear out the commits text and display a success message (similar logic to displaying error).
           exit();
         })
-        .catch((error) => {
-          setError(error);
+        .catch((err) => {
+          setError(err);
           exit();
         });
     } else {

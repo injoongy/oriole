@@ -26,7 +26,7 @@ export const getHarvestData = async (url: string) => {
   if (!response.ok) {
     throw { status: response.status };
   } else {
-    return await response.json();
+    return response.json();
   }
 };
 
