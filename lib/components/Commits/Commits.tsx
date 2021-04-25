@@ -8,7 +8,9 @@ export const Commits: FC = () => {
   const [showGitLog, setShowGitLog] = useState(false);
 
   if (!gitLog) {
-    const log = child.execSync('git log -n 10');
+    const log = child.execSync(
+      'git log --author=$(git config user.email) --format=%s%b --no-merges -n 10',
+    );
     const logString = log ? log.toString() : ''; // if log is null, like when exiting git log, there's an error - so ternary will resolve this
     // TODO: need to get git log lines from whatever timeframe specified (default should be today, but since it's dev, just get the last 10),
     // then format them with dashes and neat lines (handle multiline commits somehow?), and output that to the user for confirmation.
