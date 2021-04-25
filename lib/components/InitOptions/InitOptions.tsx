@@ -72,6 +72,7 @@ export const InitOptions = () => {
   };
 
   // TODO: think about refactoring this monster of a ternary
+  // Easiest way would be to componentize everything
   return (
     <Box flexDirection='column'>
       {error && error.status ? (
