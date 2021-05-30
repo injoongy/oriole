@@ -43,7 +43,7 @@ export const Commits: FC = () => {
           exit();
         })
         .catch((err) => {
-          setError(err);
+          setError(JSON.parse(err.message));
           exit();
         });
     } else {

@@ -24,8 +24,7 @@ export const getHarvestData = async (url: string) => {
   const options = await buildOptions('GET');
   const response = await fetch(url, options);
   if (!response.ok) {
-    // TODO: Resolve eslint issues
-    throw { status: response.status };
+    throw new Error(JSON.stringify({ status: response.status }));
   } else {
     return response.json();
   }
@@ -38,8 +37,7 @@ export const pushHarvestEntry = async (
   const options = await buildOptions('POST', JSON.stringify(entryData));
   const response = await fetch(url, options);
   if (!response.ok) {
-    // TODO: Resolve eslint issues
-    throw { status: response.status };
+    throw new Error(JSON.stringify({ status: response.status }));
   } else {
     return response.ok;
   }

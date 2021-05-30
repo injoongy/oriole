@@ -42,8 +42,8 @@ export const InitOptions = () => {
         setUserProjects(formattedProjects);
         setLoading(false);
       })
-      .catch((error) => {
-        setError(error);
+      .catch((err) => {
+        setError(JSON.parse(err.message));
         exit();
       });
   }
