@@ -16,7 +16,7 @@ export const getEncryptionKey = async () => {
 
 export const getStore = async () => {
   const encryptionKey = await getEncryptionKey();
-  const store = new Conf({ configName });
+  const store = new Conf({ encryptionKey, configName });
   return store;
 };
 
