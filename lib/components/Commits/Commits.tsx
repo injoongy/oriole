@@ -13,6 +13,7 @@ export const Commits: FC = () => {
   const [gitLog, setGitLog] = useState('');
   const [showGitLog, setShowGitLog] = useState(false);
   const [error, setError] = useState<HarvestError>();
+  const [success, setSuccess] = useState('');
   const choices: Choice[] = [
     { label: 'Yes', value: 'y' },
     { label: 'No', value: 'n' },
@@ -38,8 +39,9 @@ export const Commits: FC = () => {
       // TODO: Make sure this is idempotent. Currently can just keep running command to add multiple of the same entry.
       pushHarvestEntry('https://api.harvestapp.com/v2/time_entries', body)
         .then(() => {
-          console.log(`project: ${projectId}, task: ${taskId}`);
-          // TODO: Add logic to clear out the commits text and display a success message (similar logic to displaying error).
+          setSuccess(
+            'Your commits have been successfully pushed up to Harvest.',
+          );
           exit();
         })
         .catch((err) => {
@@ -47,7 +49,7 @@ export const Commits: FC = () => {
           exit();
         });
     } else {
-      console.log('rejected');
+      setSuccess('Your commits will not be pushed up.');
       exit();
     }
   };
@@ -66,9 +68,17 @@ export const Commits: FC = () => {
   // TODO: Componentize everything to clean up ternary?
   return (
     <Box flexDirection='column'>
+      {success ? (
+        <Box marginBottom={1}>
+          <Text>{success}</Text>
+        </Box>
+      ) : null}
       {error && error.status ? (
-        <Error status={error.status} />
-      ) : (
+        <Box marginBottom={1}>
+          <Error status={error.status} />
+        </Box>
+      ) : null}
+      {!success && !error ? (
         <Box flexDirection='column'>
           <Text>Here are your latest commits in this repo:</Text>
           {showGitLog && (
@@ -81,7 +91,7 @@ export const Commits: FC = () => {
             </Box>
           )}
         </Box>
-      )}
+      ) : null}
     </Box>
   );
 };
