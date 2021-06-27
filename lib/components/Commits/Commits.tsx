@@ -41,6 +41,7 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
       getHarvestData(
         `https://api.harvestapp.com/v2/time_entries?from=${spentDate}`,
       ).then((response) => {
+        // TODO: Simplify all of these pushHarvestEntry calls? Looks repetitive here.
         if (response.time_entries.length) {
           // See if any of the time entries are the same project and task
           const existingEntry = response.time_entries.find(
@@ -83,6 +84,23 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
                 exit();
               });
           }
+        } else {
+          // Otherwise, if there are no time entries for the day, same thing - create a new entry and push it up
+          pushHarvestEntry(
+            'https://api.harvestapp.com/v2/time_entries',
+            'POST',
+            body,
+          )
+            .then(() => {
+              setSuccess(
+                'Your commits have been successfully pushed up to Harvest.',
+              );
+              exit();
+            })
+            .catch((err) => {
+              setError(JSON.parse(err.message));
+              exit();
+            });
         }
       });
     } else {
