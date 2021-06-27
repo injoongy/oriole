@@ -42,8 +42,8 @@ export const InitOptions = () => {
         setUserProjects(formattedProjects);
         setLoading(false);
       })
-      .catch((error) => {
-        setError(error);
+      .catch((err) => {
+        setError(JSON.parse(err.message));
         exit();
       });
   }
@@ -71,6 +71,8 @@ export const InitOptions = () => {
     exit();
   };
 
+  // TODO: think about refactoring this monster of a ternary
+  // Easiest way would be to componentize everything
   return (
     <Box flexDirection='column'>
       {error && error.status ? (
@@ -90,11 +92,11 @@ export const InitOptions = () => {
               <Box marginTop={1}>
                 <SelectInput
                   items={userProjects}
-                  limit={10}
+                  limit={20}
                   onSelect={handleProjectSelect}
                 />
               </Box>
-              {userProjects.length > 10 && (
+              {userProjects.length > 20 && (
                 <Box marginLeft={2}>
                   <Text color='green'>(Scroll for more)</Text>
                 </Box>
