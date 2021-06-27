@@ -9,9 +9,9 @@ import {
   HarvestError,
   TimeEntryGetResponse,
 } from '../../utils/harvest/harvest.interface';
-import { Choice } from './Commits.interface';
+import { CommitsProps, Choice } from './Commits.interface';
 
-export const Commits: FC = () => {
+export const Commits: FC<CommitsProps> = ({ hours }) => {
   const { exit } = useApp();
   const [gitLog, setGitLog] = useState('');
   const [showGitLog, setShowGitLog] = useState(false);
@@ -30,8 +30,6 @@ export const Commits: FC = () => {
       const taskId = await getData(`${dirName}.taskId`);
       // TODO: Allow user to add custom date as flag, --date yyyy-mm-dd?
       const spentDate = new Date().toLocaleDateString('en-CA'); // today as yyyy-mm-dd
-      // TODO: Hours? Currently just hardcoded 3. Same question as above too - add as flag?
-      const hours = 3;
       const body = {
         project_id: Number(projectId),
         task_id: Number(taskId),
