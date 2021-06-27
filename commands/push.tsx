@@ -12,7 +12,13 @@ const push: FC<CommitsProps> = ({ hours }) => (
 );
 
 push.propTypes = {
+  /// The hours spent on this Harvest entry.
   hours: PropTypes.number.isRequired,
+};
+
+// @ts-ignore: shortFlags property is a Pastel built-in property, not something for the push component/CommitsProps interface definition
+push.shortFlags = {
+  hours: 'h',
 };
 
 export default push;
