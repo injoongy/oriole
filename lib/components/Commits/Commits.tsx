@@ -3,9 +3,12 @@ import { Text, Box, useApp } from 'ink';
 import SelectInput from 'ink-select-input';
 import * as child from 'child_process';
 import { getData } from '../../utils/store';
-import { pushHarvestEntry } from '../../utils/harvest/harvest';
+import { pushHarvestEntry, getHarvestData } from '../../utils/harvest/harvest';
 import { Error } from '../Error';
-import { HarvestError } from '../../utils/harvest/harvest.interface';
+import {
+  HarvestError,
+  TimeEntryGetResponse,
+} from '../../utils/harvest/harvest.interface';
 import { Choice } from './Commits.interface';
 
 export const Commits: FC = () => {
@@ -36,18 +39,54 @@ export const Commits: FC = () => {
         hours,
         notes: gitLog,
       };
-      // TODO: Make sure this is idempotent. Currently can just keep running command to add multiple of the same entry.
-      pushHarvestEntry('https://api.harvestapp.com/v2/time_entries', body)
-        .then(() => {
-          setSuccess(
-            'Your commits have been successfully pushed up to Harvest.',
+      // Get all time entries for this date
+      getHarvestData(
+        `https://api.harvestapp.com/v2/time_entries?from=${spentDate}`,
+      ).then((response) => {
+        if (response.time_entries.length) {
+          // See if any of the time entries are the same project and task
+          const existingEntry = response.time_entries.find(
+            (entry: TimeEntryGetResponse) =>
+              entry.project.id === body.project_id &&
+              entry.task.id === body.task_id,
           );
-          exit();
-        })
-        .catch((err) => {
-          setError(JSON.parse(err.message));
-          exit();
-        });
+          // If they are the same project and task, simply update that entry rather than adding a new duplicate one
+          if (existingEntry) {
+            pushHarvestEntry(
+              `https://api.harvestapp.com/v2/time_entries/${existingEntry.id}`,
+              'PATCH',
+              body,
+            )
+              .then(() => {
+                setSuccess(
+                  'Your existing time entry has been successfully updated.',
+                );
+                exit();
+              })
+              .catch((err) => {
+                setError(JSON.parse(err.message));
+                exit();
+              });
+          } else {
+            // Otherwise, create a new entry and add that
+            pushHarvestEntry(
+              'https://api.harvestapp.com/v2/time_entries',
+              'POST',
+              body,
+            )
+              .then(() => {
+                setSuccess(
+                  'Your commits have been successfully pushed up to Harvest.',
+                );
+                exit();
+              })
+              .catch((err) => {
+                setError(JSON.parse(err.message));
+                exit();
+              });
+          }
+        }
+      });
     } else {
       setSuccess('Your commits will not be pushed up.');
       exit();
