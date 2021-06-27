@@ -92,11 +92,11 @@ export const InitOptions = () => {
               <Box marginTop={1}>
                 <SelectInput
                   items={userProjects}
-                  limit={10}
+                  limit={20}
                   onSelect={handleProjectSelect}
                 />
               </Box>
-              {userProjects.length > 10 && (
+              {userProjects.length > 20 && (
                 <Box marginLeft={2}>
                   <Text color='green'>(Scroll for more)</Text>
                 </Box>
