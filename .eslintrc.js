@@ -13,6 +13,7 @@ module.exports = {
     // TODO: consider adding e.g. https://github.com/milesj/babel-plugin-typescript-to-proptypes
     'react/prop-types': 'off',
     'react/jsx-props-no-spreading': 'off',
+    'import/no-default-export': 'off',
   },
   parserOptions: {
     project: tsconfigPath,
