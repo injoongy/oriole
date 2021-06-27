@@ -12,11 +12,7 @@ const push: FC<CommitsProps> = ({ hours }) => (
 );
 
 push.propTypes = {
-  hours: PropTypes.number,
-};
-
-push.defaultProps = {
-  hours: 3,
+  hours: PropTypes.number.isRequired,
 };
 
 export default push;
