@@ -68,7 +68,7 @@ export const Commits: FC = () => {
                 exit();
               });
           } else {
-            // Otherwise, create a new entry and add that
+            // Otherwise, create a new entry and push it up
             pushHarvestEntry(
               'https://api.harvestapp.com/v2/time_entries',
               'POST',
