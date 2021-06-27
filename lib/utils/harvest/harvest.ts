@@ -1,6 +1,6 @@
 import fetch, { Headers } from 'node-fetch';
 import { getData } from '../store';
-import { Options, HarvestEntry } from './harvest.interface';
+import { Options, TimeEntryPostRequest } from './harvest.interface';
 
 const buildOptions = async (method: string, body?: string) => {
   const token = await getData('token');
@@ -32,9 +32,10 @@ export const getHarvestData = async (url: string) => {
 
 export const pushHarvestEntry = async (
   url: string,
-  entryData: HarvestEntry,
+  method: string,
+  entryData: TimeEntryPostRequest,
 ) => {
-  const options = await buildOptions('POST', JSON.stringify(entryData));
+  const options = await buildOptions(method, JSON.stringify(entryData));
   const response = await fetch(url, options);
   if (!response.ok) {
     throw new Error(JSON.stringify({ status: response.status }));
