@@ -93,7 +93,7 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
 
   if (!gitLog) {
     const log = child.execSync(
-      'git log --author=$(git config user.email) --format="- %B" --no-merges -n 10',
+      'git log --author=$(git config user.email) --format="- %B" --no-merges --after="06:00" --before="18:00"',
     );
     const logString = log ? log.toString() : ''; // if log is null, like when exiting git log, there's an error - so ternary will resolve this
     // TODO: Think about an option for a ticket heading?
