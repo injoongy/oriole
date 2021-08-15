@@ -10,7 +10,7 @@ import {
   TimeEntryGetResponse,
   TimeEntryPostRequest,
 } from '../../utils/harvest/harvest.interface';
-import { CommitsProps, Choice } from './Commits.interface';
+import { CommitsProps, Choice, EntryData } from './Commits.interface';
 
 export const Commits: FC<CommitsProps> = ({ hours }) => {
   const { exit } = useApp();
@@ -65,43 +65,45 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
       });
   };
 
+  const checkExistingEntry = async () => {
+    // Get all time entries for this date
+    getHarvestData(`https://api.harvestapp.com/v2/time_entries?from=${spentDate}`).then(
+      (response) => {
+        if (response.time_entries.length) {
+          // See if any of the time entries are the same project and task
+          const existingEntry = response.time_entries.find(
+            (entry: TimeEntryGetResponse) =>
+              entry.project.id === Number(entryData.projectId) && entry.task.id === Number(entryData.taskId),
+          );
+          // If they are the same project and task, set existingId to true and show the existing entry questions
+          if (existingEntry) {
+            setExistingId(existingEntry.id);
+          } else {
+            // Otherwise, set showGitLog to true and show the new entry questions
+            setShowGitLog(true);
+          }
+        } else {
+          // Otherwise, if there are no time entries for the day, same thing - set showGitLog to true and show the new entry questions
+          setShowGitLog(true);
+        }
+      },
+    );
+  };
+
   const handleSelect = async (item: Choice) => {
     if (item.value === 'y') {
-      const projectId = await getData(`${dirName}.projectId`);
-      const taskId = await getData(`${dirName}.taskId`);
+      const projectId = Number(entryData.projectId);
+      const taskId = Number(entryData.taskId);
       // TODO: Allow user to add custom date as flag, --date yyyy-mm-dd?
-      const spentDate = new Date().toLocaleDateString('en-CA'); // today as yyyy-mm-dd
       const body = {
-        project_id: Number(projectId),
-        task_id: Number(taskId),
+        project_id: projectId,
+        task_id: taskId,
         spent_date: spentDate,
         hours,
         notes: gitLog,
       };
-      // Get all time entries for this date
-      getHarvestData(`https://api.harvestapp.com/v2/time_entries?from=${spentDate}`).then(
-        (response) => {
-          let message = 'Your commits have been successfully pushed up to Harvest.';
-          if (response.time_entries.length) {
-            // See if any of the time entries are the same project and task
-            const existingEntry = response.time_entries.find(
-              (entry: TimeEntryGetResponse) =>
-                entry.project.id === body.project_id && entry.task.id === body.task_id,
-            );
-            // If they are the same project and task, simply update that entry rather than adding a new duplicate one
-            if (existingEntry) {
-              message = 'Your existing time entry has been successfully updated.';
-              pushEntry('PATCH', body, message, existingEntry.id);
-            } else {
-              // Otherwise, create a new entry and push it up
-              pushEntry('POST', body, message);
-            }
-          } else {
-            // Otherwise, if there are no time entries for the day, same thing - create a new entry and push it up
-            pushEntry('POST', body, message);
-          }
-        },
-      );
+      const message = 'Your commits have been successfully pushed up to Harvest.';
+      pushEntry('POST', body, message);
     } else {
       setSuccess('Your commits will not be pushed up.');
       exit();
@@ -149,7 +151,7 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
           // TODO: Think about an option for a ticket heading?
           const formattedLog = log.replace(/(^[ \t]*\n)/gm, '');
           setGitLog(formattedLog);
-          setShowGitLog(true);
+          checkExistingEntry();
         }
       }
     });
@@ -168,17 +170,16 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
           <Error status={error.status} />
         </Box>
       ) : null}
-      {!success && !error ? (
+      {!success && !error && !existingId && showGitLog ? (
         <Box flexDirection='column'>
           <Text>Here are your latest commits in this repo:</Text>
-          {showGitLog && (
-            <Box marginTop={1} flexDirection='column'>
-              <Text>{gitLog}</Text>
-              <Box flexDirection='column'>
-                <Text>Push these up to Harvest?</Text>
-                <SelectInput items={choices} onSelect={handleSelect} />
-              </Box>
+          <Box marginTop={1} flexDirection='column'>
+            <Text>{gitLog}</Text>
+            <Box flexDirection='column'>
+              <Text>Push these up to Harvest?</Text>
+              <SelectInput items={choices} onSelect={handleSelect} />
             </Box>
+          </Box>
         </Box>
       ) : null}
       {!success && !error && existingId ? (
