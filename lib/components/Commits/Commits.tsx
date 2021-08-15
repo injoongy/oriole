@@ -24,6 +24,21 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
   const currentDir = process.cwd().split('/');
   const dirName = currentDir[currentDir.length - 1];
 
+  const checkDirInit = async () => {
+    const token = await getData('token');
+    const accountId = await getData('accountId');
+    const projectId = await getData(`${dirName}.projectId`);
+    const taskId = await getData(`${dirName}.taskId`);
+
+    if (!token || !accountId) {
+      return 'No Harvest credentials found. Please run `oriole setup`, then `oriole init` in this directory, then try again.';
+    }
+    if (!projectId || !taskId) {
+      return 'No Harvet project and/or task information found. Please run `oriole init` and try again.';
+    }
+    return true;
+  };
+
   const handleSelect = async (item: Choice) => {
     if (item.value === 'y') {
       const projectId = await getData(`${dirName}.projectId`);
