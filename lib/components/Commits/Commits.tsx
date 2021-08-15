@@ -125,24 +125,30 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
   };
 
   if (!gitLog && !success) {
-    const log = child
-      .execSync(
-        'git log --author=$(git config user.email) --format="- %B" --no-merges --after="06:00" --before="18:00"', // modify this window? Have just after, not before?
-      )
-      .toString();
+    checkDirInit().then((res) => {
+      if (res !== true) {
+        setSuccess(res);
+      } else {
+        const log = child
+          .execSync(
+            'git log --author=$(git config user.email) --format="- %B" --no-merges --after="06:00" --before="18:00" --reverse', // modify this window? Have just after, not before?
+          )
+          .toString();
 
-    // if there's no git log (aka no commits were made today between 6am and 6pm), show message and exit
-    if (!log) {
-      setSuccess(
-        'No valid commits found.\nCommits need to have been made today between 6am and 6pm local time in order to be considered valid.\nMerge commits are not considered valid.\nThe ability to customize this time range window is on the roadmap, but not currently available.\nSorry for the inconvenience!',
-      );
-      // else, format the outputted git log and set it as the gitLog variable value
-    } else {
-      // TODO: Think about an option for a ticket heading?
-      const formattedLog = log.replace(/(^[ \t]*\n)/gm, '');
-      setGitLog(formattedLog);
-      setShowGitLog(true);
-    }
+        // if there's no git log (aka no commits were made today between 6am and 6pm), show message and exit
+        if (!log) {
+          setSuccess(
+            'No valid commits found.\nCommits need to have been made today between 6am and 6pm local time in order to be considered valid.\nMerge commits are not considered valid.\nThe ability to customize this time range window is on the roadmap, but not currently available.\nSorry for the inconvenience!',
+          );
+          // else, format the outputted git log and set it as the gitLog variable value
+        } else {
+          // TODO: Think about an option for a ticket heading?
+          const formattedLog = log.replace(/(^[ \t]*\n)/gm, '');
+          setGitLog(formattedLog);
+          setShowGitLog(true);
+        }
+      }
+    });
   }
 
   // TODO: Componentize everything to clean up ternary?
