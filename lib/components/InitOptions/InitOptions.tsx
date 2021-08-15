@@ -126,9 +126,16 @@ export const InitOptions = () => {
             Your project and task choices have been saved successfully.
           </Text>
           <Text>
-            This directory "{dirName}" has now been associated with the project
-            "{selections.projectName}" and the task "{selections.taskName}".
+            This directory "{dirName}" has now been associated with the following:
           </Text>
+          <Box flexDirection='column' marginTop={1} marginBottom={1}>
+            <Text>
+              Harvest Project: <Text color='blue' bold>{selections.projectName}</Text>
+            </Text>
+            <Text>
+              Harvest Task: <Text color='blue' bold>{selections.taskName}</Text>
+            </Text>
+          </Box>
           <Text>
             You may change these at any time by re-running the "oriole init"
             command.
