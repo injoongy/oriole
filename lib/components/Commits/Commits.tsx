@@ -40,12 +40,13 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
     return true;
   };
 
-  const pushEntry = (method: string, body: TimeEntryPostRequest, successMessage: string, entryId?: string) => {
-    pushHarvestEntry(
-      `https://api.harvestapp.com/v2/time_entries/${entryId || ''}`,
-      method,
-      body,
-    )
+  const pushEntry = (
+    method: string,
+    body: TimeEntryPostRequest,
+    successMessage: string,
+    entryId?: string,
+  ) => {
+    pushHarvestEntry(`https://api.harvestapp.com/v2/time_entries/${entryId || ''}`, method, body)
       .then(() => {
         setSuccess(successMessage);
         exit();
@@ -70,30 +71,29 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
         notes: gitLog,
       };
       // Get all time entries for this date
-      getHarvestData(
-        `https://api.harvestapp.com/v2/time_entries?from=${spentDate}`,
-      ).then((response) => {
-        let message = 'Your commits have been successfully pushed up to Harvest.';
-        if (response.time_entries.length) {
-          // See if any of the time entries are the same project and task
-          const existingEntry = response.time_entries.find(
-            (entry: TimeEntryGetResponse) =>
-              entry.project.id === body.project_id &&
-              entry.task.id === body.task_id,
-          );
-          // If they are the same project and task, simply update that entry rather than adding a new duplicate one
-          if (existingEntry) {
-            message = 'Your existing time entry has been successfully updated.';
-            pushEntry('PATCH', body, message, existingEntry.id);
+      getHarvestData(`https://api.harvestapp.com/v2/time_entries?from=${spentDate}`).then(
+        (response) => {
+          let message = 'Your commits have been successfully pushed up to Harvest.';
+          if (response.time_entries.length) {
+            // See if any of the time entries are the same project and task
+            const existingEntry = response.time_entries.find(
+              (entry: TimeEntryGetResponse) =>
+                entry.project.id === body.project_id && entry.task.id === body.task_id,
+            );
+            // If they are the same project and task, simply update that entry rather than adding a new duplicate one
+            if (existingEntry) {
+              message = 'Your existing time entry has been successfully updated.';
+              pushEntry('PATCH', body, message, existingEntry.id);
+            } else {
+              // Otherwise, create a new entry and push it up
+              pushEntry('POST', body, message);
+            }
           } else {
-            // Otherwise, create a new entry and push it up
+            // Otherwise, if there are no time entries for the day, same thing - create a new entry and push it up
             pushEntry('POST', body, message);
           }
-        } else {
-          // Otherwise, if there are no time entries for the day, same thing - create a new entry and push it up
-          pushEntry('POST', body, message);
-        }
-      });
+        },
+      );
     } else {
       setSuccess('Your commits will not be pushed up.');
       exit();
