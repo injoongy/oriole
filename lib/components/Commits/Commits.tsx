@@ -40,9 +40,9 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
     return true;
   };
 
-  const pushEntry = (method: string, body: TimeEntryPostRequest, successMessage: string) => {
+  const pushEntry = (method: string, body: TimeEntryPostRequest, successMessage: string, entryId?: string) => {
     pushHarvestEntry(
-      'https://api.harvestapp.com/v2/time_entries',
+      `https://api.harvestapp.com/v2/time_entries/${entryId || ''}`,
       method,
       body,
     )
@@ -84,7 +84,7 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
           // If they are the same project and task, simply update that entry rather than adding a new duplicate one
           if (existingEntry) {
             message = 'Your existing time entry has been successfully updated.';
-            pushEntry('PATCH', body, message);
+            pushEntry('PATCH', body, message, existingEntry.id);
           } else {
             // Otherwise, create a new entry and push it up
             pushEntry('POST', body, message);
