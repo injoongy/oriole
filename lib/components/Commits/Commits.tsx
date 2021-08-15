@@ -16,14 +16,21 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
   const { exit } = useApp();
   const [gitLog, setGitLog] = useState('');
   const [showGitLog, setShowGitLog] = useState(false);
+  const [existingId, setExistingId] = useState('');
+  const [entryData, setEntryData] = useState<EntryData>({});
   const [error, setError] = useState<HarvestError>();
   const [success, setSuccess] = useState('');
   const choices: Choice[] = [
     { label: 'Yes', value: 'y' },
     { label: 'No', value: 'n' },
   ];
+  const existingChoices: Choice[] = [
+    { label: 'Replace', value: 'r' },
+    { label: 'Add', value: 'a' },
+  ];
   const currentDir = process.cwd().split('/');
   const dirName = currentDir[currentDir.length - 1];
+  const spentDate = new Date().toLocaleDateString('en-CA'); // today as yyyy-mm-dd
 
   const checkDirInit = async () => {
     const token = await getData('token');
@@ -37,6 +44,7 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
     if (!projectId || !taskId) {
       return 'No Harvet project and/or task information found. Please run `oriole init` and try again.';
     }
+    setEntryData({ projectId, taskId });
     return true;
   };
 
@@ -100,6 +108,26 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
     }
   };
 
+  const handleExistingSelect = async (item: Choice) => {
+    const projectId = Number(entryData.projectId);
+    const taskId = Number(entryData.taskId);
+    // TODO: Allow user to add custom date as flag, --date yyyy-mm-dd?
+    const body = {
+      project_id: projectId,
+      task_id: taskId,
+      spent_date: spentDate,
+      hours,
+      notes: gitLog,
+    };
+    let message = 'Your existing time entry has been successfully updated.';
+    if (item.value === 'r') {
+      pushEntry('PATCH', body, message, existingId);
+    } else {
+      message = 'A new time entry has been pushed up to Harvest.';
+      pushEntry('POST', body, message);
+    }
+  };
+
   if (!gitLog && !success) {
     checkDirInit().then((res) => {
       if (res !== true) {
@@ -151,7 +179,15 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
                 <SelectInput items={choices} onSelect={handleSelect} />
               </Box>
             </Box>
-          )}
+        </Box>
+      ) : null}
+      {!success && !error && existingId ? (
+        <Box flexDirection='column'>
+          <Text>We&apos;ve found an existing entry on Harvest with the same project and task.</Text>
+          <Box marginTop={1} flexDirection='column'>
+            <Text>Would you like to replace the last entry added, or add a new entry?</Text>
+            <SelectInput items={existingChoices} onSelect={handleExistingSelect} />
+          </Box>
         </Box>
       ) : null}
     </Box>
