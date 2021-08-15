@@ -8,6 +8,7 @@ import { Error } from '../Error';
 import {
   HarvestError,
   TimeEntryGetResponse,
+  TimeEntryPostRequest,
 } from '../../utils/harvest/harvest.interface';
 import { CommitsProps, Choice } from './Commits.interface';
 
@@ -39,6 +40,22 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
     return true;
   };
 
+  const pushEntry = (method: string, body: TimeEntryPostRequest, successMessage: string) => {
+    pushHarvestEntry(
+      'https://api.harvestapp.com/v2/time_entries',
+      method,
+      body,
+    )
+      .then(() => {
+        setSuccess(successMessage);
+        exit();
+      })
+      .catch((err) => {
+        setError(JSON.parse(err.message));
+        exit();
+      });
+  };
+
   const handleSelect = async (item: Choice) => {
     if (item.value === 'y') {
       const projectId = await getData(`${dirName}.projectId`);
@@ -56,7 +73,7 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
       getHarvestData(
         `https://api.harvestapp.com/v2/time_entries?from=${spentDate}`,
       ).then((response) => {
-        // TODO: Simplify all of these pushHarvestEntry calls? Looks repetitive here.
+        let message = 'Your commits have been successfully pushed up to Harvest.';
         if (response.time_entries.length) {
           // See if any of the time entries are the same project and task
           const existingEntry = response.time_entries.find(
@@ -66,56 +83,15 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
           );
           // If they are the same project and task, simply update that entry rather than adding a new duplicate one
           if (existingEntry) {
-            pushHarvestEntry(
-              `https://api.harvestapp.com/v2/time_entries/${existingEntry.id}`,
-              'PATCH',
-              body,
-            )
-              .then(() => {
-                setSuccess(
-                  'Your existing time entry has been successfully updated.',
-                );
-                exit();
-              })
-              .catch((err) => {
-                setError(JSON.parse(err.message));
-                exit();
-              });
+            message = 'Your existing time entry has been successfully updated.';
+            pushEntry('PATCH', body, message);
           } else {
             // Otherwise, create a new entry and push it up
-            pushHarvestEntry(
-              'https://api.harvestapp.com/v2/time_entries',
-              'POST',
-              body,
-            )
-              .then(() => {
-                setSuccess(
-                  'Your commits have been successfully pushed up to Harvest.',
-                );
-                exit();
-              })
-              .catch((err) => {
-                setError(JSON.parse(err.message));
-                exit();
-              });
+            pushEntry('POST', body, message);
           }
         } else {
           // Otherwise, if there are no time entries for the day, same thing - create a new entry and push it up
-          pushHarvestEntry(
-            'https://api.harvestapp.com/v2/time_entries',
-            'POST',
-            body,
-          )
-            .then(() => {
-              setSuccess(
-                'Your commits have been successfully pushed up to Harvest.',
-              );
-              exit();
-            })
-            .catch((err) => {
-              setError(JSON.parse(err.message));
-              exit();
-            });
+          pushEntry('POST', body, message);
         }
       });
     } else {
