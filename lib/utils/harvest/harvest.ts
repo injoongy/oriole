@@ -37,6 +37,7 @@ export const pushHarvestEntry = async (
 ) => {
   const options = await buildOptions(method, JSON.stringify(entryData));
   const response = await fetch(url, options);
+  console.log('*** RESPONSE ***', response);
   if (!response.ok) {
     throw new Error(JSON.stringify({ status: response.status }));
   } else {
