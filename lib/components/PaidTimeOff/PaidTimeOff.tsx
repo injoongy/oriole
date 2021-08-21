@@ -18,9 +18,8 @@ export const PaidTimeOff: FC<PaidTimeOffProps> = ({ year }) => {
   const currentYearDateStart = `${year || new Date().getFullYear()}-01-01`;
   const currentYearDateEnd = year && `${year}-12-31`;
 
-
   if (!hours && !message && !error) {
-    if (Number.isNaN(year) || !Number.isInteger(year)) {
+    if (year !== undefined && (Number.isNaN(year) || !Number.isInteger(year))) {
       setLoading(false);
       setMessage('Please enter a valid year.');
     } else {
