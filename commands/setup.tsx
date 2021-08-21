@@ -18,7 +18,7 @@ const setup: FC = () => (
       Tokens and IDs can be found at
       <Text color='blue'>
         {' '}
-        https://id.getharvest.com/oauth2/access_tokens/new
+        https://id.getharvest.com/developers
       </Text>
       .
     </Text>
