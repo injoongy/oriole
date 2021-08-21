@@ -5,3 +5,7 @@ export interface IndexProps {
 export interface PushProps {
   hours?: number;
 }
+
+export interface PtoProps {
+  year?: number;
+}
