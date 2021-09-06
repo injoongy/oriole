@@ -5,7 +5,6 @@ import * as child from 'child_process';
 import { getData } from '../../utils/store';
 import { pushHarvestEntry, getHarvestData } from '../../utils/harvest/harvest';
 import { Error } from '../Error';
-import { getExclusiveSubstring } from '../../utils/helpers';
 import {
   HarvestError,
   TimeEntryGetResponse,
@@ -49,6 +48,30 @@ export const Commits: FC<CommitsProps> = ({ hours, commitDate }) => {
     setEntryData({ projectId, taskId });
     return true;
   };
+
+  if (!gitLog && !success) {
+    checkDirInit().then((res) => {
+      if (res !== true) {
+        setSuccess(res);
+      } else {
+        const log = child
+          .execSync(
+            'git log --author=$(git config user.email) --format="- %B" --no-merges --since=midnight --reverse',
+          )
+          .toString();
+        // if there's no git log (aka no commits were made today), show message and exit
+        if (!log) {
+          setSuccess(
+            'No valid commits found.\nCommits need to have been made today in order to be considered valid.\nMerge commits are not considered valid.',
+          );
+          // else, format the outputted git log and set it as the gitLog variable value
+        } else {
+          const formattedLog = log.replace(/(^[ \t]*\n)/gm, '');
+          setGitLog(formattedLog);
+        }
+      }
+    });
+  }
 
   const pushEntry = (
     method: string,
@@ -155,30 +178,6 @@ export const Commits: FC<CommitsProps> = ({ hours, commitDate }) => {
       setSuccess('Your commits will not be pushed up. No changes have been made to your Harvest entries.');
     }
   };
-
-  if (!gitLog && !success) {
-    checkDirInit().then((res) => {
-      if (res !== true) {
-        setSuccess(res);
-      } else {
-        const log = child
-          .execSync(
-            'git log --author=$(git config user.email) --format="- %B" --no-merges --since=midnight --reverse',
-          )
-          .toString();
-        // if there's no git log (aka no commits were made today), show message and exit
-        if (!log) {
-          setSuccess(
-            'No valid commits found.\nCommits need to have been made today in order to be considered valid.\nMerge commits are not considered valid.',
-          );
-          // else, format the outputted git log and set it as the gitLog variable value
-        } else {
-          const formattedLog = log.replace(/(^[ \t]*\n)/gm, '');
-          setGitLog(formattedLog);
-        }
-      }
-    });
-  }
 
   // TODO: Componentize everything to clean up ternary?
   return (
