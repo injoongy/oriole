@@ -4,7 +4,7 @@ import { Box } from 'ink';
 import { Commits } from '../lib/components/Commits';
 import { PushProps } from '../lib/utils/commandTypes.interface';
 
-/// Create a timesheet entry out of the most recent git commit messages in this repo (made today between 6am and 6pm local time) and push it up to Harvest.
+/// Create a timesheet entry out of the most recent git commit messages in this repo (for commits made today, local time) and push it up to Harvest.
 const push: FC<PushProps> = ({ hours }) => (
   <Box flexDirection='column'>
     <Commits hours={hours} />

@@ -42,7 +42,7 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
       return 'No Harvest credentials found. Please run `oriole setup`, then `oriole init` in this directory, then try again.';
     }
     if (!projectId || !taskId) {
-      return 'No Harvet project and/or task information found. Please run `oriole init` and try again.';
+      return 'No Harvest project and/or task information found. Please run `oriole init` and try again.';
     }
     setEntryData({ projectId, taskId });
     return true;
@@ -141,10 +141,10 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
           )
           .toString();
 
-        // if there's no git log (aka no commits were made today between 6am and 6pm), show message and exit
+        // if there's no git log (aka no commits were made today), show message and exit
         if (!log) {
           setSuccess(
-            'No valid commits found.\nCommits need to have been made today between 6am and 6pm local time in order to be considered valid.\nMerge commits are not considered valid.\nThe ability to customize this time range window is on the roadmap, but not currently available.\nSorry for the inconvenience!',
+            'No valid commits found.\nCommits need to have been made today in order to be considered valid.\nMerge commits are not considered valid.',
           );
           // else, format the outputted git log and set it as the gitLog variable value
         } else {
