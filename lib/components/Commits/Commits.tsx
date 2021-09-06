@@ -18,6 +18,7 @@ export const Commits: FC<CommitsProps> = ({ hours, commitDate }) => {
   const [gitLog, setGitLog] = useState('');
   const [showGitLog, setShowGitLog] = useState(false);
   const [existingEntry, setExistingEntry] = useState<ExistingEntryData>({});
+  const [confirmReplace, setConfirmReplace] = useState(false);
   const [entryData, setEntryData] = useState<EntryData>({});
   const [error, setError] = useState<HarvestError>();
   const [success, setSuccess] = useState('');
@@ -26,7 +27,7 @@ export const Commits: FC<CommitsProps> = ({ hours, commitDate }) => {
     { label: 'No', value: 'n' },
   ];
   const existingChoices: Choice[] = [
-    { label: 'Merge', value: 'm' },
+    { label: 'Replace', value: 'r' },
     { label: 'Create', value: 'c' },
   ];
   const currentDir = process.cwd().split('/');
@@ -67,6 +68,10 @@ export const Commits: FC<CommitsProps> = ({ hours, commitDate }) => {
   };
 
   useEffect(() => {
+    // guard against useEffect running automatically on mount
+    if (!gitLog) {
+      return;
+    }
     // Get all time entries for this date
     getHarvestData(`https://api.harvestapp.com/v2/time_entries?from=${spentDate}`).then(
       (response) => {
@@ -117,36 +122,27 @@ export const Commits: FC<CommitsProps> = ({ hours, commitDate }) => {
   const handleExistingSelect = async (item: Choice) => {
     const projectId = Number(entryData.projectId);
     const taskId = Number(entryData.taskId);
-    let message = 'Your existing time entry has been successfully updated.';
-    if (item.value === 'm') {
-      let mergedNotes = '';
-      let mergedHours = 0;
-      // This will never not be true since existingEntry has to exist before handleExistingSelect runs.
-      // Adding this guard clause just to make the linter happy.
-      if (existingEntry.notes) {
-        // Since a part of the gitLog could already be at the end of existingEntry's notes, find the unique
-        // beginning part of existingEntry.notes:
-        const existingEntryStart = getExclusiveSubstring(existingEntry.notes, gitLog);
-        // Now that we've found the unique part of the existingEntry's notes, stick that at the beginning of
-        // the current gitLog string.
-        mergedNotes = `${existingEntryStart}\n${gitLog}`;
-      }
-      if (existingEntry && existingEntry.hours && hours) {
-        // Again, this will never not be true, since handleExistingSelect will only run if existingEntry, well, exists.
-        // Same goes for hours, except for the entire push command. But the linter gets made without this guard clause.
-        mergedHours = existingEntry.hours + hours;
-      }
-      // TODO: Allow user to add custom date as flag, --date yyyy-mm-dd?
-      const body = {
-        project_id: projectId,
-        task_id: taskId,
-        spent_date: spentDate,
-        hours: mergedHours,
-        notes: mergedNotes,
-      };
-      pushEntry('PATCH', body, message, existingEntry.id);
+    const message = 'A new time entry has been pushed up to Harvest.';
+    const body = {
+      project_id: projectId,
+      task_id: taskId,
+      spent_date: spentDate,
+      hours,
+      notes: gitLog,
+    };
+    if (item.value === 'r') {
+      setConfirmReplace(true);
     } else {
       // TODO: Allow user to add custom date as flag, --date yyyy-mm-dd?
+      pushEntry('POST', body, message);
+    }
+  };
+
+  const handleReplaceConfirmSelect = async (item: Choice) => {
+    if (item.value === 'y') {
+      const projectId = Number(entryData.projectId);
+      const taskId = Number(entryData.taskId);
+      const message = 'Your existing time entry has been successfully updated.';
       const body = {
         project_id: projectId,
         task_id: taskId,
@@ -154,8 +150,9 @@ export const Commits: FC<CommitsProps> = ({ hours, commitDate }) => {
         hours,
         notes: gitLog,
       };
-      message = 'A new time entry has been pushed up to Harvest.';
-      pushEntry('POST', body, message);
+      pushEntry('PATCH', body, message, existingEntry.id);
+    } else {
+      setSuccess('Your commits will not be pushed up. No changes have been made to your Harvest entries.');
     }
   };
 
@@ -169,7 +166,6 @@ export const Commits: FC<CommitsProps> = ({ hours, commitDate }) => {
             'git log --author=$(git config user.email) --format="- %B" --no-merges --since=midnight --reverse',
           )
           .toString();
-
         // if there's no git log (aka no commits were made today), show message and exit
         if (!log) {
           setSuccess(
@@ -197,7 +193,7 @@ export const Commits: FC<CommitsProps> = ({ hours, commitDate }) => {
           <Error status={error.status} />
         </Box>
       ) : null}
-      {!success && !error && !existingEntry.id && showGitLog ? (
+      {!success && !error && !existingEntry.id && gitLog && showGitLog ? (
         <Box flexDirection='column'>
           <Text>Here are your latest commits in this repo:</Text>
           <Box marginTop={1} flexDirection='column'>
@@ -209,12 +205,28 @@ export const Commits: FC<CommitsProps> = ({ hours, commitDate }) => {
           </Box>
         </Box>
       ) : null}
-      {!success && !error && existingEntry.id ? (
+      {!success && !error && existingEntry.id && !confirmReplace ? (
         <Box flexDirection='column'>
           <Text>We&apos;ve found an existing entry on Harvest with the same project and task.</Text>
           <Box marginTop={1} flexDirection='column'>
-            <Text>Would you like to merge with the last entry added, or create a new entry?</Text>
+            <Text>Would you like to replace the old entry, or create a new entry?</Text>
             <SelectInput items={existingChoices} onSelect={handleExistingSelect} />
+          </Box>
+        </Box>
+      ) : null}
+      {!success && !error && existingEntry.id && confirmReplace ? (
+        <Box flexDirection='column'>
+          <Text color='red' bold>WARNING: This will PERMANENTLY DELETE this existing Harvest entry:</Text>
+          <Box marginTop={1} marginBottom={1}>
+            <Text>{existingEntry.notes}</Text>
+          </Box>
+          <Text color='red' bold>And replace it with this one:</Text>
+          <Box marginTop={1}>
+            <Text>{gitLog}</Text>
+          </Box>
+          <Box marginTop={1} flexDirection='column'>
+            <Text>Are you sure?</Text>
+            <SelectInput items={choices} onSelect={handleReplaceConfirmSelect} />
           </Box>
         </Box>
       ) : null}
