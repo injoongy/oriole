@@ -76,7 +76,6 @@ export const Commits: FC<CommitsProps> = ({ hours, commitDate }) => {
               entry.project.id === Number(entryData.projectId) && entry.task.id === Number(entryData.taskId),
           );
           // If the formattedLog exists inside the foundEntry's notes, say so and quit - we don't need to push it up again
-          console.log('git log', gitLog);
           if (foundEntry && foundEntry.notes.includes(gitLog)) {
             setSuccess(`Your latest commits are already in Harvest and will not be pushed up.\nHere is the full entry:\n\n${foundEntry.notes}`);
           } else if (foundEntry) {
@@ -169,8 +168,6 @@ export const Commits: FC<CommitsProps> = ({ hours, commitDate }) => {
         } else {
           const formattedLog = log.replace(/(^[ \t]*\n)/gm, '');
           setGitLog(formattedLog);
-          console.log('formatted log', formattedLog);
-          // checkExistingEntry();
         }
       }
     });
