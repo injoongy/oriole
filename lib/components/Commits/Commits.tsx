@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { Text, Box, useApp } from 'ink';
 import SelectInput from 'ink-select-input';
 import * as child from 'child_process';
@@ -12,7 +12,7 @@ import {
 } from '../../utils/harvest/harvest.interface';
 import { CommitsProps, Choice, EntryData, ExistingEntryData } from './Commits.interface';
 
-export const Commits: FC<CommitsProps> = ({ hours }) => {
+export const Commits: FC<CommitsProps> = ({ hours, commitDate }) => {
   const { exit } = useApp();
   const [gitLog, setGitLog] = useState('');
   const [showGitLog, setShowGitLog] = useState(false);
@@ -25,8 +25,8 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
     { label: 'No', value: 'n' },
   ];
   const existingChoices: Choice[] = [
-    { label: 'Replace', value: 'r' },
-    { label: 'Add', value: 'a' },
+    { label: 'Merge', value: 'm' },
+    { label: 'Create', value: 'c' },
   ];
   const currentDir = process.cwd().split('/');
   const dirName = currentDir[currentDir.length - 1];
@@ -65,7 +65,7 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
       });
   };
 
-  const checkExistingEntry = async () => {
+  useEffect(() => {
     // Get all time entries for this date
     getHarvestData(`https://api.harvestapp.com/v2/time_entries?from=${spentDate}`).then(
       (response) => {
@@ -78,7 +78,7 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
           // If the formattedLog exists inside the foundEntry's notes, say so and quit - we don't need to push it up again
           console.log('git log', gitLog);
           if (foundEntry && foundEntry.notes.includes(gitLog)) {
-            setSuccess(`Your latest commits are .\nHere is the entry:\n\n${foundEntry.notes}`);
+            setSuccess(`Your latest commits are already in Harvest and will not be pushed up.\nHere is the full entry:\n\n${foundEntry.notes}`);
           } else if (foundEntry) {
             // If they are the same project and task, set existingId to true and show the existing entry questions
             setExistingEntry(foundEntry);
@@ -92,7 +92,7 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
         }
       },
     );
-  };
+  }, [gitLog]);
 
   const handleSelect = async (item: Choice) => {
     if (item.value === 'y') {
@@ -117,25 +117,33 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
   const handleExistingSelect = async (item: Choice) => {
     const projectId = Number(entryData.projectId);
     const taskId = Number(entryData.taskId);
-    const mergedNotes = `${existingEntry.notes}\n\n${gitLog}`;
-    let mergedHours = 0;
-    if (existingEntry && existingEntry.hours && hours) {
-      // This will never not be true, since handleExistingSelect will only run if existingEntry, well, exists.
-      // Same goes for hours, except for the entire push command. But the linter gets made without this guard clause.
-      mergedHours = existingEntry.hours + hours;
-    }
-    // TODO: Allow user to add custom date as flag, --date yyyy-mm-dd?
-    const body = {
-      project_id: projectId,
-      task_id: taskId,
-      spent_date: spentDate,
-      hours: mergedHours,
-      notes: mergedNotes,
-    };
     let message = 'Your existing time entry has been successfully updated.';
-    if (item.value === 'r') {
+    if (item.value === 'm') {
+      const mergedNotes = `${existingEntry.notes}\n${gitLog}`;
+      let mergedHours = 0;
+      if (existingEntry && existingEntry.hours && hours) {
+        // This will never not be true, since handleExistingSelect will only run if existingEntry, well, exists.
+        // Same goes for hours, except for the entire push command. But the linter gets made without this guard clause.
+        mergedHours = existingEntry.hours + hours;
+      }
+      // TODO: Allow user to add custom date as flag, --date yyyy-mm-dd?
+      const body = {
+        project_id: projectId,
+        task_id: taskId,
+        spent_date: spentDate,
+        hours: mergedHours,
+        notes: mergedNotes,
+      };
       pushEntry('PATCH', body, message, existingEntry.id);
     } else {
+      // TODO: Allow user to add custom date as flag, --date yyyy-mm-dd?
+      const body = {
+        project_id: projectId,
+        task_id: taskId,
+        spent_date: spentDate,
+        hours,
+        notes: gitLog,
+      };
       message = 'A new time entry has been pushed up to Harvest.';
       pushEntry('POST', body, message);
     }
@@ -159,10 +167,10 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
           );
           // else, format the outputted git log and set it as the gitLog variable value
         } else {
-          // TODO: Think about an option for a ticket heading?
           const formattedLog = log.replace(/(^[ \t]*\n)/gm, '');
           setGitLog(formattedLog);
-          checkExistingEntry();
+          console.log('formatted log', formattedLog);
+          // checkExistingEntry();
         }
       }
     });
@@ -197,7 +205,7 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
         <Box flexDirection='column'>
           <Text>We&apos;ve found an existing entry on Harvest with the same project and task.</Text>
           <Box marginTop={1} flexDirection='column'>
-            <Text>Would you like to merge with the last entry added, or add an entirely new entry?</Text>
+            <Text>Would you like to merge with the last entry added, or create a new entry?</Text>
             <SelectInput items={existingChoices} onSelect={handleExistingSelect} />
           </Box>
         </Box>
