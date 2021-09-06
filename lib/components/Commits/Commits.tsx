@@ -118,10 +118,16 @@ export const Commits: FC<CommitsProps> = ({ hours, commitDate }) => {
     const taskId = Number(entryData.taskId);
     let message = 'Your existing time entry has been successfully updated.';
     if (item.value === 'm') {
-      const mergedNotes = `${existingEntry.notes}\n${gitLog}`;
+      let mergedNotes = '';
       let mergedHours = 0;
+      if (existingEntry.notes) {
+        // This will never not be true since existingEntry has to exist before handleExistingSelect runs.
+        // Adding this guard clause just to make the linter happy.
+        // Since a part of the gitLog could already be part (or all) of the existingEntry's notes, simply replace it.
+        mergedNotes = existingEntry.notes.replace(existingEntry.notes, gitLog);
+      }
       if (existingEntry && existingEntry.hours && hours) {
-        // This will never not be true, since handleExistingSelect will only run if existingEntry, well, exists.
+        // Again, this will never not be true, since handleExistingSelect will only run if existingEntry, well, exists.
         // Same goes for hours, except for the entire push command. But the linter gets made without this guard clause.
         mergedHours = existingEntry.hours + hours;
       }
