@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { Text, Box, useApp } from 'ink';
 import Spinner from 'ink-spinner';
 import { Error } from '../Error';
@@ -69,7 +69,7 @@ export const PaidTimeOff: FC<PaidTimeOffProps> = ({ year }) => {
       {loading ? (
         <Text>
           <Text color='blue'>
-            <Spinner type='clock' />
+            <Spinner type='weather' />
           </Text>
           {' Calculating...'}
         </Text>
