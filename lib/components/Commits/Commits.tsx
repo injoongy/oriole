@@ -10,13 +10,13 @@ import {
   TimeEntryGetResponse,
   TimeEntryPostRequest,
 } from '../../utils/harvest/harvest.interface';
-import { CommitsProps, Choice, EntryData } from './Commits.interface';
+import { CommitsProps, Choice, EntryData, ExistingEntryData } from './Commits.interface';
 
 export const Commits: FC<CommitsProps> = ({ hours }) => {
   const { exit } = useApp();
   const [gitLog, setGitLog] = useState('');
   const [showGitLog, setShowGitLog] = useState(false);
-  const [existingId, setExistingId] = useState('');
+  const [existingEntry, setExistingEntry] = useState<ExistingEntryData>({});
   const [entryData, setEntryData] = useState<EntryData>({});
   const [error, setError] = useState<HarvestError>();
   const [success, setSuccess] = useState('');
@@ -71,13 +71,17 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
       (response) => {
         if (response.time_entries.length) {
           // See if any of the time entries are the same project and task
-          const existingEntry = response.time_entries.find(
+          const foundEntry = response.time_entries.find(
             (entry: TimeEntryGetResponse) =>
               entry.project.id === Number(entryData.projectId) && entry.task.id === Number(entryData.taskId),
           );
-          // If they are the same project and task, set existingId to true and show the existing entry questions
-          if (existingEntry) {
-            setExistingId(existingEntry.id);
+          // If the formattedLog exists inside the foundEntry's notes, say so and quit - we don't need to push it up again
+          console.log('git log', gitLog);
+          if (foundEntry && foundEntry.notes.includes(gitLog)) {
+            setSuccess(`Your latest commits are .\nHere is the entry:\n\n${foundEntry.notes}`);
+          } else if (foundEntry) {
+            // If they are the same project and task, set existingId to true and show the existing entry questions
+            setExistingEntry(foundEntry);
           } else {
             // Otherwise, set showGitLog to true and show the new entry questions
             setShowGitLog(true);
@@ -113,17 +117,24 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
   const handleExistingSelect = async (item: Choice) => {
     const projectId = Number(entryData.projectId);
     const taskId = Number(entryData.taskId);
+    const mergedNotes = `${existingEntry.notes}\n\n${gitLog}`;
+    let mergedHours = 0;
+    if (existingEntry && existingEntry.hours && hours) {
+      // This will never not be true, since handleExistingSelect will only run if existingEntry, well, exists.
+      // Same goes for hours, except for the entire push command. But the linter gets made without this guard clause.
+      mergedHours = existingEntry.hours + hours;
+    }
     // TODO: Allow user to add custom date as flag, --date yyyy-mm-dd?
     const body = {
       project_id: projectId,
       task_id: taskId,
       spent_date: spentDate,
-      hours,
-      notes: gitLog,
+      hours: mergedHours,
+      notes: mergedNotes,
     };
     let message = 'Your existing time entry has been successfully updated.';
     if (item.value === 'r') {
-      pushEntry('PATCH', body, message, existingId);
+      pushEntry('PATCH', body, message, existingEntry.id);
     } else {
       message = 'A new time entry has been pushed up to Harvest.';
       pushEntry('POST', body, message);
@@ -170,7 +181,7 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
           <Error status={error.status} />
         </Box>
       ) : null}
-      {!success && !error && !existingId && showGitLog ? (
+      {!success && !error && !existingEntry.id && showGitLog ? (
         <Box flexDirection='column'>
           <Text>Here are your latest commits in this repo:</Text>
           <Box marginTop={1} flexDirection='column'>
@@ -182,11 +193,11 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
           </Box>
         </Box>
       ) : null}
-      {!success && !error && existingId ? (
+      {!success && !error && existingEntry.id ? (
         <Box flexDirection='column'>
           <Text>We&apos;ve found an existing entry on Harvest with the same project and task.</Text>
           <Box marginTop={1} flexDirection='column'>
-            <Text>Would you like to replace the last entry added, or add a new entry?</Text>
+            <Text>Would you like to merge with the last entry added, or add an entirely new entry?</Text>
             <SelectInput items={existingChoices} onSelect={handleExistingSelect} />
           </Box>
         </Box>
