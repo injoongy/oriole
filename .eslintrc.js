@@ -14,6 +14,7 @@ module.exports = {
     'react/prop-types': 'off',
     'react/jsx-props-no-spreading': 'off',
     'import/no-default-export': 'off',
+    'no-plusplus': 'off',
   },
   parserOptions: {
     project: tsconfigPath,

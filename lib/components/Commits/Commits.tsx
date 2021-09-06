@@ -5,6 +5,7 @@ import * as child from 'child_process';
 import { getData } from '../../utils/store';
 import { pushHarvestEntry, getHarvestData } from '../../utils/harvest/harvest';
 import { Error } from '../Error';
+import { getExclusiveSubstring } from '../../utils/helpers';
 import {
   HarvestError,
   TimeEntryGetResponse,
@@ -120,11 +121,15 @@ export const Commits: FC<CommitsProps> = ({ hours, commitDate }) => {
     if (item.value === 'm') {
       let mergedNotes = '';
       let mergedHours = 0;
+      // This will never not be true since existingEntry has to exist before handleExistingSelect runs.
+      // Adding this guard clause just to make the linter happy.
       if (existingEntry.notes) {
-        // This will never not be true since existingEntry has to exist before handleExistingSelect runs.
-        // Adding this guard clause just to make the linter happy.
-        // Since a part of the gitLog could already be part (or all) of the existingEntry's notes, simply replace it.
-        mergedNotes = existingEntry.notes.replace(existingEntry.notes, gitLog);
+        // Since a part of the gitLog could already be at the end of existingEntry's notes, find the unique
+        // beginning part of existingEntry.notes:
+        const existingEntryStart = getExclusiveSubstring(existingEntry.notes, gitLog);
+        // Now that we've found the unique part of the existingEntry's notes, stick that at the beginning of
+        // the current gitLog string.
+        mergedNotes = `${existingEntryStart}\n${gitLog}`;
       }
       if (existingEntry && existingEntry.hours && hours) {
         // Again, this will never not be true, since handleExistingSelect will only run if existingEntry, well, exists.
