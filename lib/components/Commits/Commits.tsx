@@ -137,7 +137,7 @@ export const Commits: FC<CommitsProps> = ({ hours }) => {
       } else {
         const log = child
           .execSync(
-            'git log --author=$(git config user.email) --format="- %B" --no-merges --after="06:00" --before="18:00" --reverse', // modify this window? Have just after, not before?
+            'git log --author=$(git config user.email) --format="- %B" --no-merges --since=midnight --reverse',
           )
           .toString();
 
