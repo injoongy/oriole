@@ -27,6 +27,7 @@ Please refer to `conf`'s README to find the default location of this file (it de
 ```bash
 ~/Library/Preferences/oriole-nodejs/orioleStore.json
 ```
+Feel free to delete this file at any time. You'll just need to re-run `oriole setup` the next time you run a command.
 
 ### `oriole init`
 Initialize the current repo with a Harvest project ID and task ID. These IDs
