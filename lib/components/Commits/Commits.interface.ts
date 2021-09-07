@@ -1,5 +1,6 @@
 export interface CommitsProps {
   hours?: number;
+  commitDate?: string;
 }
 
 export interface Choice {
@@ -10,4 +11,10 @@ export interface Choice {
 export interface EntryData {
   projectId?: string;
   taskId?: string;
+}
+
+export interface ExistingEntryData {
+  id?: string;
+  notes?: string;
+  hours?: number;
 }

@@ -10,17 +10,10 @@ const setup: FC = () => (
   to re-authenticate? And if we implement this, then add flag as a shortcut?
   To skip the prompt? */
   <Box flexDirection='column'>
+    <Text>Please enter your Harvest Personal Access Token and your Harvest Account ID here.</Text>
     <Text>
-      Please enter your Harvest Personal Access Token and your Harvest Account
-      ID here.
-    </Text>
-    <Text>
-      Tokens and IDs can be found at
-      <Text color='blue'>
-        {' '}
-        https://id.getharvest.com/developers
-      </Text>
-      .
+      Tokens and IDs can be found or created at
+      <Text color='blue'> https://id.getharvest.com/developers</Text>.
     </Text>
     <SetupFields />
   </Box>

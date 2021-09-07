@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
-import { Text } from 'ink';
+import Gradient from 'ink-gradient';
+import BigText from 'ink-big-text';
 import { version } from '../package.json';
 
 // TODO: Add chalk output to this to make it look cool, also update command description, and see if you can fix the duplicate command trick
@@ -8,6 +9,10 @@ import { version } from '../package.json';
 // the help menu for the oriole command itself. Hence, the double output. Or something like that. Fix? Maybe get rid of index command altogether?
 
 /// Command to display the version.
-const oriole: FC = () => <Text>ORIOLE v{version}</Text>;
+const oriole: FC = () => (
+  <Gradient colors={['red', 'orange']}>
+    <BigText text={`ORIOLE v${version}`} />
+  </Gradient>
+);
 
 export default oriole;

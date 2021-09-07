@@ -4,6 +4,7 @@ export interface IndexProps {
 
 export interface PushProps {
   hours?: number;
+  date?: string;
 }
 
 export interface PtoProps {

@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { useState } from 'react';
 import { Text, Box, useApp } from 'ink';
 import SelectInput from 'ink-select-input';
 import Spinner from 'ink-spinner';
@@ -26,7 +26,6 @@ export const InitOptions = () => {
   const dirName = currentDir[currentDir.length - 1];
 
   // TODO: add logic to just set task or project using --project, --task, etc
-  // TODO: think about bad-path bugs - user forgets to set these before trying to save, etc.
   // TODO: is there some way we can cache everything to prevent too many network requests?
 
   if (!rawUserProjects.length && !error) {
@@ -71,13 +70,14 @@ export const InitOptions = () => {
     exit();
   };
 
-  // TODO: think about refactoring this monster of a ternary
+  // TODO: think about refactoring this series of ternaries
   // Easiest way would be to componentize everything
   return (
     <Box flexDirection='column'>
       {error && error.status ? (
         <Error status={error.status} />
-      ) : !userProjectTasks.length ? (
+      ) : null}
+      {!userProjectTasks.length ? (
         <Box flexDirection='column'>
           <Text>Please select a project to associate with this directory.</Text>
           {loading ? (
@@ -104,7 +104,8 @@ export const InitOptions = () => {
             </Box>
           )}
         </Box>
-      ) : userProjectTasks.length && !selections.taskName ? (
+      ) : null}
+      {userProjectTasks.length && !selections.taskName ? (
         <Box flexDirection='column'>
           <Text>Please select a project task.</Text>
           <Box marginTop={1}>
@@ -120,13 +121,14 @@ export const InitOptions = () => {
             </Box>
           )}
         </Box>
-      ) : (
+      ) : null}
+      {userProjectTasks.length && selections.taskName ? (
         <Box flexDirection='column' marginTop={1} marginBottom={1}>
           <Text>
             Your project and task choices have been saved successfully.
           </Text>
           <Text>
-            This directory "{dirName}" has now been associated with the following:
+            This directory &quot;{dirName}&quot; has now been associated with the following:
           </Text>
           <Box flexDirection='column' marginTop={1} marginBottom={1}>
             <Text>
@@ -137,11 +139,11 @@ export const InitOptions = () => {
             </Text>
           </Box>
           <Text>
-            You may change these at any time by re-running the "oriole init"
+            You may change these at any time by re-running the &quot;oriole init&quot;
             command.
           </Text>
         </Box>
-      )}
+      ) : null}
     </Box>
   );
 };
