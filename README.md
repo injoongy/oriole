@@ -52,7 +52,7 @@ In the event that the same project/task entry is already in your Harvest account
 ### `oriole pto`
 Additional arguments:
 ```
---year, -y  The year for which you'd like to see the total number of PTO hours spent.			[number]
+--year, -y  The year for which you'd like to see the total number of PTO hours spent.	[number]
 ```
 
 Run this command to have `oriole` calculate the total number of PTO hours spent in the current calendar year. It will only calculate the PTO hours spent for the Tivix internal Harvest project and task.
