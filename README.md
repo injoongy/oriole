@@ -61,6 +61,8 @@ Shows the help text and the available commands.
 
 
 ## Development
+If you'd like to run the project locally, simply clone (or fork and clone) the repo and run `npm install`.
+
 There are 2 available commands:
 
 - `npm run dev` - Start development mode and recompile on change
