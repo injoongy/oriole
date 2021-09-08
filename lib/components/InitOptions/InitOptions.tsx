@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, Box, useApp } from 'ink';
 import SelectInput from 'ink-select-input';
 import Spinner from 'ink-spinner';
+import * as child from 'child_process';
 import { getHarvestData } from '../../utils/harvest/harvest';
 import { HarvestError } from '../../utils/harvest/harvest.interface';
 import { saveData } from '../../utils/store';
@@ -20,6 +21,7 @@ export const InitOptions = () => {
   const [userProjectTasks, setUserProjectTasks] = useState<FormattedTask[]>([]);
   const [selections, setSelections] = useState<Selections>({});
   const [error, setError] = useState<HarvestError>();
+  const [abortMessage, setAbortMessage] = useState('');
   const [loading, setLoading] = useState(true);
 
   const currentDir = process.cwd().split('/');
@@ -28,7 +30,17 @@ export const InitOptions = () => {
   // TODO: add logic to just set task or project using --project, --task, etc
   // TODO: is there some way we can cache everything to prevent too many network requests?
 
-  if (!rawUserProjects.length && !error) {
+  useEffect(() => {
+    if(!abortMessage) {
+      child.exec('[ -d .git ] && echo .git || git rev-parse --git-dir > /dev/null 2>&1', (execError) => {
+        if (execError) {
+          setAbortMessage('This directory doesn\'t appear to be a Git repository.\nPlease navigate to a directory that is a Git repository and try again.');
+        }
+      });
+    }
+  }, [abortMessage]);
+  // this next conditional still runs even if directory isn't a git repo - fix so the request never gets made if abortMessage gets set
+  if (!rawUserProjects.length && !error && !abortMessage) {
     getHarvestData('https://api.harvestapp.com/v2/users/me/project_assignments')
       .then((data) => {
         setRawUserProjects(data.project_assignments);
@@ -77,7 +89,10 @@ export const InitOptions = () => {
       {error && error.status ? (
         <Error status={error.status} />
       ) : null}
-      {!userProjectTasks.length ? (
+      {abortMessage ? (
+        <Text color='red'>{abortMessage}</Text>
+      ) : null}
+      {!userProjectTasks.length && !abortMessage ? (
         <Box flexDirection='column'>
           <Text>Please select a project to associate with this directory.</Text>
           {loading ? (
@@ -105,7 +120,7 @@ export const InitOptions = () => {
           )}
         </Box>
       ) : null}
-      {userProjectTasks.length && !selections.taskName ? (
+      {userProjectTasks.length && !selections.taskName && !abortMessage ? (
         <Box flexDirection='column'>
           <Text>Please select a project task.</Text>
           <Box marginTop={1}>
@@ -122,7 +137,7 @@ export const InitOptions = () => {
           )}
         </Box>
       ) : null}
-      {userProjectTasks.length && selections.taskName ? (
+      {userProjectTasks.length && selections.taskName && !abortMessage ? (
         <Box flexDirection='column' marginTop={1} marginBottom={1}>
           <Text>
             Your project and task choices have been saved successfully.

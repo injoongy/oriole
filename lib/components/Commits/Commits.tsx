@@ -194,7 +194,7 @@ export const Commits: FC<CommitsProps> = ({ hours, commitDate }) => {
     if (item.value === 'y') {
       const projectId = Number(entryData.projectId);
       const taskId = Number(entryData.taskId);
-      const message = 'Your existing time entry has been successfully updated.';
+      const message = 'Your existing time entry has been successfully replaced with the new commits.';
       const body = {
         project_id: projectId,
         task_id: taskId,
@@ -239,9 +239,19 @@ export const Commits: FC<CommitsProps> = ({ hours, commitDate }) => {
       ) : null}
       {!success && !error && existingEntry.id && !confirmReplace ? (
         <Box flexDirection='column'>
-          <Text>We&apos;ve found an existing entry on Harvest with the same project and task.</Text>
+          <Box marginBottom={1}>
+            <Text color='red'>We&apos;ve found an existing entry on Harvest with the same project and task.</Text>
+          </Box>
+          <Text color='blue'>This is the existing entry:</Text>
+          <Box marginTop={1} marginBottom={1}>
+            <Text>{existingEntry.notes}</Text>
+          </Box>
+          <Text color='blue'>And here are the latest commits that you&apos;re trying to push:</Text>
+          <Box marginTop={1}>
+            <Text>{gitLog}</Text>
+          </Box>
           <Box marginTop={1} flexDirection='column'>
-            <Text>Would you like to replace the old entry, or create a new entry?</Text>
+            <Text>Would you like to replace the existing entry, or create a new entry?</Text>
             <SelectInput items={existingChoices} onSelect={handleExistingSelect} />
           </Box>
         </Box>
@@ -250,11 +260,11 @@ export const Commits: FC<CommitsProps> = ({ hours, commitDate }) => {
         <Box flexDirection='column'>
           <Text color='red' bold>WARNING: This will PERMANENTLY DELETE this existing Harvest entry:</Text>
           <Box marginTop={1} marginBottom={1}>
-            <Text>{existingEntry.notes}</Text>
+            <Text color='red'>{existingEntry.notes}</Text>
           </Box>
-          <Text color='red' bold>And replace it with this one:</Text>
+          <Text color='green' bold>And replace it with this one:</Text>
           <Box marginTop={1}>
-            <Text>{gitLog}</Text>
+            <Text color='green'>{gitLog}</Text>
           </Box>
           <Box marginTop={1} flexDirection='column'>
             <Text>Are you sure?</Text>

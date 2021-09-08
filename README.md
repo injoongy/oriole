@@ -1,6 +1,6 @@
 # oriole
 
-Make time fly. 🐦
+Make time fly 🐦
 
 A CLI app that automatically creates a [Harvest](https://www.getharvest.com/) time entry out of your git commits.
 Made using [ink](https://github.com/vadimdemedes/ink) and [pastel](https://github.com/vadimdemedes/ink).
@@ -8,11 +8,7 @@ Made using [ink](https://github.com/vadimdemedes/ink) and [pastel](https://githu
 ## Install
 
 ```bash
-$ npm install oriole
-```
-or
-```bash
-$ yarn add oriole
+$ npm install -g oriole
 ```
 
 
@@ -46,7 +42,7 @@ Additional arguments:
 --date, -d   Get the commits made on the specified date.              [string]
 ```
 This is the main command for `oriole`. Using `oriole push`, you can create a timesheet entry out of the most recent git commit messages in your current repo
-(made either on the current day or on the specified date using `--date`). After confirmation, oriole will create a Harvest time entry using the previously-specified Harvest project/task, and POST it to your account.
+(made either on the current day or on the specified date using `--date`). After confirmation, `oriole` will create a Harvest time entry using the previously-specified Harvest project/task, and POST it to your account.
 
 In the event that the same project/task entry is already in your Harvest account on the day you specified (if, for example, you added it manually), `oriole` will ask whether you would like to replace that existing entry or create a new one. If there are multiple entries, choosing to replace will only replace the most recent entry.
 
@@ -65,6 +61,8 @@ Shows the help text and the available commands.
 
 
 ## Development
+If you'd like to run the project locally, simply clone (or fork and clone) the repo and run `npm install`.
+
 There are 2 available commands:
 
 - `npm run dev` - Start development mode and recompile on change
