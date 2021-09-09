@@ -3,7 +3,7 @@
 Make time fly 🐦
 
 A CLI app that automatically creates a [Harvest](https://www.getharvest.com/) time entry out of your git commits.
-Made using [ink](https://github.com/vadimdemedes/ink) and [pastel](https://github.com/vadimdemedes/ink).
+Made using [Ink](https://github.com/vadimdemedes/ink) and [Pastel](https://github.com/vadimdemedes/pastel).
 
 ## Install
 
