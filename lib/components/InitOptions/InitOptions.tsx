@@ -31,33 +31,32 @@ export const InitOptions = () => {
   // TODO: is there some way we can cache everything to prevent too many network requests?
 
   useEffect(() => {
-    if(!abortMessage) {
-      child.exec('[ -d .git ] && echo .git || git rev-parse --git-dir > /dev/null 2>&1', (execError) => {
-        if (execError) {
-          setAbortMessage('This directory doesn\'t appear to be a Git repository.\nPlease navigate to a directory that is a Git repository and try again.');
-        }
-      });
-    }
-  }, [abortMessage]);
-  // this next conditional still runs even if directory isn't a git repo - fix so the request never gets made if abortMessage gets set
-  if (!rawUserProjects.length && !error && !abortMessage) {
-    getHarvestData('https://api.harvestapp.com/v2/users/me/project_assignments')
-      .then((data) => {
-        setRawUserProjects(data.project_assignments);
-        const formattedProjects = data.project_assignments.map(
-          (project: Project) => ({
-            label: project.project.name,
-            value: project.project.id,
-          }),
-        );
-        setUserProjects(formattedProjects);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(JSON.parse(err.message));
-        exit();
-      });
-  }
+    child.exec('[ -d .git ] && echo .git || git rev-parse --git-dir > /dev/null 2>&1', (execError) => {
+      if (execError) {
+        setAbortMessage('This directory doesn\'t appear to be a Git repository.\nPlease navigate to a directory that is a Git repository and try again.');
+      }
+      // this next conditional still runs even if directory isn't a git repo - fix so the request never gets made if abortMessage gets set
+      else if (!rawUserProjects.length && !error) {
+        getHarvestData('https://api.harvestapp.com/v2/users/me/project_assignments')
+          .then((data) => {
+            setRawUserProjects(data.project_assignments);
+            const formattedProjects = data.project_assignments.map(
+              (project: Project) => ({
+                label: project.project.name,
+                value: project.project.id,
+              }),
+            );
+            setUserProjects(formattedProjects);
+            setLoading(false);
+          })
+          .catch((err) => {
+            setError(JSON.parse(err.message));
+            exit();
+          });
+      }
+    });
+  }, []);
+
 
   const handleProjectSelect = (selectedItem: FormattedProject) => {
     saveData(`${dirName}.projectId`, selectedItem.value);
