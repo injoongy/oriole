@@ -92,9 +92,8 @@ export const InitOptions = () => {
       {abortMessage ? (
         <Text color='red'>{abortMessage}</Text>
       ) : null}
-      {!userProjectTasks.length && !abortMessage ? (
+      {!userProjectTasks.length && !error && !abortMessage ? (
         <Box flexDirection='column'>
-          <Text>Please select a project to associate with this directory.</Text>
           {loading ? (
             <Text>
               <Text color='blue'>
@@ -103,7 +102,8 @@ export const InitOptions = () => {
               {' Loading...'}
             </Text>
           ) : (
-            <Box>
+            <Box flexDirection='column'>
+              <Text>Please select a project to associate with this directory.</Text>
               <Box marginTop={1}>
                 <SelectInput
                   items={userProjects}
@@ -120,7 +120,7 @@ export const InitOptions = () => {
           )}
         </Box>
       ) : null}
-      {userProjectTasks.length && !selections.taskName && !abortMessage ? (
+      {userProjectTasks.length && !selections.taskName && !error && !abortMessage ? (
         <Box flexDirection='column'>
           <Text>Please select a project task.</Text>
           <Box marginTop={1}>
@@ -137,7 +137,7 @@ export const InitOptions = () => {
           )}
         </Box>
       ) : null}
-      {userProjectTasks.length && selections.taskName && !abortMessage ? (
+      {userProjectTasks.length && selections.taskName && !error && !abortMessage ? (
         <Box flexDirection='column' marginTop={1} marginBottom={1}>
           <Text>
             Your project and task choices have been saved successfully.
