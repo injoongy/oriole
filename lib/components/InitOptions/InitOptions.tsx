@@ -31,33 +31,34 @@ export const InitOptions = () => {
   // TODO: is there some way we can cache everything to prevent too many network requests?
 
   useEffect(() => {
-    if(!abortMessage) {
-      child.exec('[ -d .git ] && echo .git || git rev-parse --git-dir > /dev/null 2>&1', (execError) => {
-        if (execError) {
-          setAbortMessage('This directory doesn\'t appear to be a Git repository.\nPlease navigate to a directory that is a Git repository and try again.');
-        }
-      });
-    }
-  }, [abortMessage]);
-  // this next conditional still runs even if directory isn't a git repo - fix so the request never gets made if abortMessage gets set
-  if (!rawUserProjects.length && !error && !abortMessage) {
-    getHarvestData('https://api.harvestapp.com/v2/users/me/project_assignments')
-      .then((data) => {
-        setRawUserProjects(data.project_assignments);
-        const formattedProjects = data.project_assignments.map(
-          (project: Project) => ({
-            label: project.project.name,
-            value: project.project.id,
-          }),
-        );
-        setUserProjects(formattedProjects);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(JSON.parse(err.message));
-        exit();
-      });
-  }
+    // check to see if current dir is a valid git repo
+    child.exec('[ -d .git ] && echo .git || git rev-parse --git-dir > /dev/null 2>&1', (execError) => {
+      if (execError) {
+        // if not, set abort message
+        setAbortMessage('This directory doesn\'t appear to be a Git repository.\nPlease navigate to a directory that is a Git repository and try again.');
+      }
+      // else, proceed with running GET request
+      else if (!rawUserProjects.length && !error) {
+        getHarvestData('https://api.harvestapp.com/v2/users/me/project_assignments')
+          .then((data) => {
+            setRawUserProjects(data.project_assignments);
+            const formattedProjects = data.project_assignments.map(
+              (project: Project) => ({
+                label: project.project.name,
+                value: project.project.id,
+              }),
+            );
+            setUserProjects(formattedProjects);
+            setLoading(false);
+          })
+          .catch((err) => {
+            setError(JSON.parse(err.message));
+            exit();
+          });
+      }
+    });
+  }, []);
+
 
   const handleProjectSelect = (selectedItem: FormattedProject) => {
     saveData(`${dirName}.projectId`, selectedItem.value);
@@ -92,9 +93,8 @@ export const InitOptions = () => {
       {abortMessage ? (
         <Text color='red'>{abortMessage}</Text>
       ) : null}
-      {!userProjectTasks.length && !abortMessage ? (
+      {!userProjectTasks.length && !error && !abortMessage ? (
         <Box flexDirection='column'>
-          <Text>Please select a project to associate with this directory.</Text>
           {loading ? (
             <Text>
               <Text color='blue'>
@@ -103,7 +103,8 @@ export const InitOptions = () => {
               {' Loading...'}
             </Text>
           ) : (
-            <Box>
+            <Box flexDirection='column'>
+              <Text>Please select a project to associate with this directory.</Text>
               <Box marginTop={1}>
                 <SelectInput
                   items={userProjects}
@@ -120,7 +121,7 @@ export const InitOptions = () => {
           )}
         </Box>
       ) : null}
-      {userProjectTasks.length && !selections.taskName && !abortMessage ? (
+      {userProjectTasks.length && !selections.taskName && !error && !abortMessage ? (
         <Box flexDirection='column'>
           <Text>Please select a project task.</Text>
           <Box marginTop={1}>
@@ -137,7 +138,7 @@ export const InitOptions = () => {
           )}
         </Box>
       ) : null}
-      {userProjectTasks.length && selections.taskName && !abortMessage ? (
+      {userProjectTasks.length && selections.taskName && !error && !abortMessage ? (
         <Box flexDirection='column' marginTop={1} marginBottom={1}>
           <Text>
             Your project and task choices have been saved successfully.
